@@ -60,7 +60,7 @@ def test_extra_packages_sane():
              (LB / "extra-packages.txt").read_text(encoding="utf-8").splitlines()]
     pkgs = [ln for ln in lines if ln]
     for need in ("kubuntu-desktop", "linux-image-generic", "casper",
-                 "calamares"):
+                 "calamares", "calamares-settings-ubuntu-common"):
         assert need in pkgs, need
     assert len(pkgs) == len(set(pkgs))  # keine Duplikate
 
@@ -103,7 +103,7 @@ def test_build_uses_lb3_options():
                    "--bootappend-failsafe", "--volatile true",
                    "--initramfs casper", "username=lokro", "hostname=lokroos",
                    'LB_BOOTLOADER="grub2"', "0910-lokroos-grub-titles",
-                   "--firmware-chroot false"):
+                   "--firmware-chroot false", "config/binary"):
         assert marker in build, marker
     for stale in ("--bootloaders ", "--bootappend-live-failsafe",
                   "--username ", "--hostname ", "--image-name ",

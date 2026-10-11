@@ -60,12 +60,18 @@ fi
 
 # lb 3.x: --bootloader kennt nur grub|syslinux|yaboot, doch der casper-faehige
 # grub2-Pfad (lb_binary_grub2) laeuft nur mit LB_BOOTLOADER=grub2.
-# Override in config/common (fail-fast, kein stiller Fallback auf legacy-grub).
+# ACHTUNG: lb liest mehrere Config-Dateien (spaetere gewinnen) – darum in
+# common UND binary setzen, sonst baut der Legacy-Pfad (grub-legacy -> E:).
 log "Bootloader auf grub2 zwingen …"
-sed -i 's/^LB_BOOTLOADER=.*/LB_BOOTLOADER="grub2"/' config/common
-grep -q '^LB_BOOTLOADER="grub2"$' config/common \
-  || echo 'LB_BOOTLOADER="grub2"' >> config/common
-grep -q '^LB_BOOTLOADER="grub2"$' config/common \
+for cfg in config/common config/binary; do
+  if grep -q '^LB_BOOTLOADER=' "$cfg" 2>/dev/null; then
+    sed -i 's/^LB_BOOTLOADER=.*/LB_BOOTLOADER="grub2"/' "$cfg"
+  else
+    echo 'LB_BOOTLOADER="grub2"' >> "$cfg"
+  fi
+done
+grep -h '^LB_BOOTLOADER=' config/common config/binary | sort -u | tee -a "$LOG"
+[[ "$(grep -h '^LB_BOOTLOADER=' config/common config/binary | sort -u)" == 'LB_BOOTLOADER="grub2"' ]] \
   || fail "LB_BOOTLOADER-Override fehlgeschlagen (Abbruch, kein falsches ISO)"
 
 # GRUB-Titel: übernimmt der Binary-Hook 0910-* (läuft nach lb_binary_grub2,
