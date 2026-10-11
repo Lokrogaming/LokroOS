@@ -1,0 +1,64 @@
+#!/bin/sh
+# LokroOS EARLY-Hook (chroot, VOR Paketinstallation): i386-Arch + Fremd-Repos.
+# Warum hier: lb_chroot_early_hooks laeuft nach chroot_archives, aber VOR
+# install-packages – spaetere Hooks kaemen zu spaet fuer i386/:i386-Pakete.
+# Methode = iso/provision-lokroos.sh (dort dokumentiert). Fail-fast.
+set -e
+log() { echo "[lokroos-early] $*"; }
+fail() { echo "[lokroos-early][FEHLER] $*" >&2; exit 1; }
+
+command -v apt-get >/dev/null 2>&1 || fail "apt-get fehlt im Chroot."
+command -v curl >/dev/null 2>&1 || {
+  log "curl/gnupg aus Stock-Quellen …"
+  apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates curl gnupg
+}
+
+if ! dpkg --print-foreign-architectures 2>/dev/null | grep -q i386; then
+  log "Aktiviere i386 …"
+  dpkg --add-architecture i386 || fail "dpkg --add-architecture i386 schlug fehl."
+else
+  log "i386 bereits aktiv."
+fi
+
+add_repo() { # $1=name $2=key-url $3=key-path $4=deb822-source
+  if [ -f "/etc/apt/sources.list.d/$1.sources" ]; then
+    log "Repo $1 bereits vorhanden."
+    return 0
+  fi
+  log "Repo $1 …"
+  curl -fsSL "$2" | gpg --dearmor -o "$3" || fail "Key $1 ladbar?"
+  chmod 644 "$3"
+  printf '%s\n' "$4" > "/etc/apt/sources.list.d/$1.sources"
+}
+
+add_repo "nodesource" "https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key" \
+  "/usr/share/keyrings/nodesource.gpg" \
+  "Types: deb
+URIs: https://deb.nodesource.com/node_22.x
+Suites: nodistro
+Components: main
+Architectures: amd64
+Signed-By: /usr/share/keyrings/nodesource.gpg"
+
+add_repo "vscode" "https://packages.microsoft.com/keys/microsoft.asc" \
+  "/usr/share/keyrings/vscode.gpg" \
+  "Types: deb
+URIs: https://packages.microsoft.com/repos/code
+Suites: stable
+Components: main
+Architectures: amd64
+Signed-By: /usr/share/keyrings/vscode.gpg"
+
+add_repo "gh-cli" "https://cli.github.com/packages/githubcli-archive-keyring.gpg" \
+  "/usr/share/keyrings/githubcli.gpg" \
+  "Types: deb
+URIs: https://cli.github.com/packages
+Suites: stable
+Components: main
+Architectures: amd64
+Signed-By: /usr/share/keyrings/githubcli.gpg"
+
+log "Paketlisten aktualisieren …"
+apt-get update || fail "apt-get update nach Repo-Setup schlug fehl."
+log "Early-Setup fertig."

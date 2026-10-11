@@ -26,25 +26,9 @@ rm -rf "$OUT/config"
 mkdir -p "$OUT/config/package-lists" "$OUT/config/includes.chroot/opt/lokroos" \
   "$OUT/config/hooks/normal"
 
-# --- 1. Paketliste aus Manifesten + Extras (eine Wahrheit, dedupliziert) ---
-python3 - "$ROOT" "$OUT/config/package-lists/lokroos.list.chroot" <<'EOF'
-import json, sys
-root, dest = sys.argv[1], sys.argv[2]
-pkgs, seen = [], set()
-import pathlib
-for mf in sorted(pathlib.Path(root, "packages").glob("manifest-*.json")):
-    for p in json.loads(mf.read_text(encoding="utf-8")).get("packages", []):
-        if p not in seen:
-            seen.add(p); pkgs.append(p)
-for line in pathlib.Path(root, "iso", "live-build", "extra-packages.txt").read_text(encoding="utf-8").splitlines():
-    line = line.split("#", 1)[0].strip()
-    if line and line not in seen:
-        seen.add(line); pkgs.append(line)
-header = ("# LokroOS Paketliste (generiert aus packages/manifest-*.json + extra-packages.txt, "
-          " NICHT von Hand editieren)\n")
-pathlib.Path(dest).write_text(header + "\n".join(pkgs) + "\n", encoding="utf-8")
-print(f"{len(pkgs)} Pakete")
-EOF
+# --- 1. Paketliste aus Manifesten + Extras - Excludes (eine Wahrheit) ---
+python3 "$ROOT/iso/live-build/make_packagelist.py" "$ROOT" \
+  "$OUT/config/package-lists/lokroos.list.chroot"
 
 # --- 2. Brand-Quellen für den Chroot-Hook ---
 for d in branding config installer shell packages; do
@@ -52,9 +36,10 @@ for d in branding config installer shell packages; do
 done
 cp "$ROOT/VERSION" "$OUT/config/includes.chroot/opt/lokroos/"
 
-# --- 3. Hooks (chroot + binary) ---
+# --- 3. Hooks (chroot + early + binary) ---
 cp "$ROOT/iso/live-build/hooks/"*.hook.chroot \
    "$ROOT/iso/live-build/hooks/"*.hook.binary \
+   "$ROOT/iso/live-build/hooks/"*.hook.chroot_early \
   "$OUT/config/hooks/normal/"
 chmod +x "$OUT/config/hooks/normal/"*.hook.*
 

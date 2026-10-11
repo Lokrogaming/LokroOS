@@ -51,7 +51,7 @@ if [[ ! -f .stage/config ]]; then
     --grub-splash none \
     --debian-installer false \
     --initramfs casper \
-    --firmware-binary true --firmware-chroot true \
+    --firmware-binary false --firmware-chroot false \
     --bootappend-live "boot=casper username=lokro hostname=lokroos quiet splash ---" \
     --bootappend-failsafe "boot=casper username=lokro nomodeset quiet splash ---" \
     --iso-application "LokroOS $VERSION" --iso-preparer "LOKRO" \

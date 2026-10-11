@@ -10,11 +10,28 @@ LB = ROOT / "iso" / "live-build"
 
 
 def test_scaffolding_files_exist():
-    for f in ("generate.sh", "build.sh",
-              "extra-packages.txt", "README.md",
+    for f in ("generate.sh", "build.sh", "make_packagelist.py",
+              "extra-packages.txt", "exclude-iso.txt", "README.md",
               "hooks/0900-lokroos-brand.hook.chroot",
+              "hooks/0000-lokroos-repos.hook.chroot_early",
               "hooks/0910-lokroos-grub-titles.hook.binary"):
         assert (LB / f).is_file(), f
+
+
+def test_packagelist_builder():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "make_packagelist", LB / "make_packagelist.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    pkgs = mod.build(str(ROOT))
+    for need in ("kubuntu-desktop", "linux-image-generic", "linux-firmware",
+                 "casper", "calamares", "nodejs", "steam-installer",
+                 "wine32", "mesa-vulkan-drivers:i386"):
+        assert need in pkgs, need
+    for banned in ("bottles", "proton-vpn-gnome-desktop", "steam"):
+        assert banned not in pkgs, f"darf nicht ins ISO: {banned}"
+    assert len(pkgs) == len(set(pkgs))  # keine Duplikate
 
 
 def test_pipeline_sources_are_git_tracked():
@@ -28,10 +45,13 @@ def test_pipeline_sources_are_git_tracked():
     assert r.returncode == 0, r.stderr
     tracked = set(r.stdout.split())
     for f in ("iso/live-build/generate.sh", "iso/live-build/build.sh",
-              "iso/live-build/rename-grub.py",
+              "iso/live-build/make_packagelist.py",
               "iso/live-build/extra-packages.txt",
+              "iso/live-build/exclude-iso.txt",
               "iso/live-build/README.md",
-              "iso/live-build/hooks/0900-lokroos-brand.hook.chroot"):
+              "iso/live-build/hooks/0900-lokroos-brand.hook.chroot",
+              "iso/live-build/hooks/0000-lokroos-repos.hook.chroot_early",
+              "iso/live-build/hooks/0910-lokroos-grub-titles.hook.binary"):
         assert f in tracked, f"nicht getrackt (gitignore?): {f}"
 
 
@@ -82,7 +102,8 @@ def test_build_uses_lb3_options():
     for marker in ("--bootloader grub", "--grub-splash none",
                    "--bootappend-failsafe", "--volatile true",
                    "--initramfs casper", "username=lokro", "hostname=lokroos",
-                   'LB_BOOTLOADER="grub2"', "0910-lokroos-grub-titles"):
+                   'LB_BOOTLOADER="grub2"', "0910-lokroos-grub-titles",
+                   "--firmware-chroot false"):
         assert marker in build, marker
     for stale in ("--bootloaders ", "--bootappend-live-failsafe",
                   "--username ", "--hostname ", "--image-name ",

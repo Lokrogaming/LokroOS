@@ -1,0 +1,5 @@
+# ISO-Exclude-Liste: Pakete aus Manifesten, die NICHT ins ISO duerfen.
+# Ein Paket pro Zeile, Grund dahinter. Betrifft NUR live-build (Provisionierung
+# installiert weiter alles, inkl. manueller/Flatpak-Schritte aus den Manifest-Notes).
+bottles  # nicht in Ubuntu-Archiven (nur Flathub) -> sonst apt-Fehler im Build
+proton-vpn-gnome-desktop  # braucht Proton-Fremd-Repo -> optional, manuell nach Installation
