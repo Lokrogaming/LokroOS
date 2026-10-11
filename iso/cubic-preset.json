@@ -1,7 +1,7 @@
 {
   "_comment": "LokroOS Cubic-Vorlage (MANUELLE Vorlage für die Cubic-GUI, kein Maschinenformat). Basis: Kubuntu 24.04.5 ISO. Ablaufdetails: BUILD.md Abschnitt Cubic.",
   "base_iso": "kubuntu-24.04.5-desktop-amd64.iso",
-  "volume_id": "LokroOS 0.3.0 amd64",
+  "volume_id": "LokroOS 0.4.0 amd64",
   "kernel_policy": "Original-Kernel der Basis-ISO zum Bootstrap behalten (Cubic-Empfehlung ab 23.04); Plymouth-Live-Splash folgt per Initrd-Schritt.",
   "boot_entries": {
     "_comment": "Im Cubic Boot-Tab eintragen bzw. prüfen – Vorlage: config/grub/iso-entries.cfg.snippet",
