@@ -19,7 +19,9 @@ def load_module():
 def test_json_output_de(monkeypatch, capsys):
     mod = load_module()
     monkeypatch.setenv("LANG", "de_DE.UTF-8")
-    monkeypatch.setenv("USER", "testnutzer")
+    # getpass.getuser() löst auf Linux per UID auf (ignoriert $USER) –
+    # deshalb den Login-Namen direkt mocken (Produkt nutzt bewusst getpass zuerst).
+    monkeypatch.setattr(mod.getpass, "getuser", lambda: "testnutzer")
     assert mod.main(["--json-only"]) == 0
     payload = json.loads(capsys.readouterr().out.strip())
     assert payload["user"] == "testnutzer"
@@ -30,7 +32,7 @@ def test_json_output_de(monkeypatch, capsys):
 def test_json_output_en(monkeypatch, capsys):
     mod = load_module()
     monkeypatch.setenv("LANG", "en_US.UTF-8")
-    monkeypatch.setenv("USER", "alice")
+    monkeypatch.setattr(mod.getpass, "getuser", lambda: "alice")
     assert mod.main(["--json-only"]) == 0
     payload = json.loads(capsys.readouterr().out.strip())
     assert payload["message"] == "Welcome back, alice!"

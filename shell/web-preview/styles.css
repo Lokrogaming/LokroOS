@@ -73,18 +73,83 @@ body {
 .icon-btn:hover { box-shadow: var(--lokro-shadow-glow); }
 .avatar { width: 32px; border-radius: 999px; }
 
-.grid {
+/* Workspace + Fenster */
+#workspace {
   display: grid; gap: 20px; padding: 20px;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  max-width: 1280px; margin: 0 auto;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  max-width: 1280px; margin: 0 auto; align-items: start;
 }
-.card { padding: 22px; }
-.card h2 { margin: 0 0 14px; font-size: 17px; font-weight: 600; }
-.syslist { margin: 0 0 14px; display: grid; gap: 8px; }
-.syslist > div { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; }
-.syslist dt { color: var(--lokro-text-secondary); }
-.syslist dd { margin: 0; font-weight: 500; }
-.quick-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.window { overflow: hidden; }
+.window[hidden] { display: none; }
+.window.opening { animation: winIn 260ms var(--lokro-easing); }
+.window.closing { animation: winOut 160ms var(--lokro-easing); }
+@keyframes winIn { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes winOut { to { opacity: 0; transform: translateY(8px) scale(.98); } }
+
+.titlebar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; border-bottom: 1px solid rgba(148,197,255,0.08);
+}
+.win-dot { width: 10px; height: 10px; border-radius: 999px; background: var(--lokro-cyan); box-shadow: var(--lokro-shadow-glow); flex: none; }
+.win-title { font-weight: 600; font-size: 14px; }
+.sim-badge {
+  font-size: 10px; color: var(--lokro-light-blue);
+  border: 1px solid var(--lokro-border-glass); border-radius: 999px; padding: 2px 8px;
+  white-space: nowrap;
+}
+.win-btn {
+  background: transparent; color: var(--lokro-text-secondary);
+  border: 1px solid transparent; border-radius: 8px;
+  width: 30px; height: 28px; cursor: pointer; font-size: 16px; line-height: 1;
+}
+.win-btn:hover { background: rgba(34,211,238,0.10); color: var(--lokro-text); border-color: var(--lokro-border-glass); }
+.win-body { padding: 18px; }
+
+/* Dashboard-Tabs */
+.tabbar { display: flex; gap: 6px; padding: 12px 16px 0; align-items: center; }
+.tab {
+  display: flex; align-items: center; gap: 8px;
+  background: transparent; color: var(--lokro-text-secondary);
+  border: 1px solid transparent; border-radius: 10px 10px 0 0;
+  padding: 8px 12px; cursor: pointer; font-size: 13px; font-weight: 500;
+  border-bottom: none;
+}
+.tab:hover { color: var(--lokro-text); background: rgba(34,211,238,0.06); }
+.tab.active { color: var(--lokro-text); background: rgba(34,211,238,0.10); border-color: var(--lokro-border-glass); }
+.tab .x {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; border-radius: 6px; font-size: 13px;
+  border: none; background: transparent; color: inherit; cursor: pointer; padding: 0;
+}
+.tab .x:hover { background: rgba(248,113,113,0.25); color: #F87171; }
+.tab-restore {
+  margin-left: auto; background: transparent; color: var(--lokro-text-secondary);
+  border: 1px dashed var(--lokro-border-glass); border-radius: 8px;
+  width: 28px; height: 28px; cursor: pointer; font-size: 15px;
+}
+.tab-restore:hover { color: var(--lokro-cyan); border-color: var(--lokro-cyan); }
+.tabpane { animation: paneIn 220ms var(--lokro-easing); }
+.tabpane[hidden] { display: none; }
+@keyframes paneIn { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: none; } }
+.tabs-empty { text-align: center; padding: 28px 12px; color: var(--lokro-text-secondary); }
+
+/* Stat-Cards + Charts */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.stat-card {
+  background: rgba(6,9,15,0.45); border: 1px solid rgba(148,197,255,0.08);
+  border-radius: var(--lokro-radius-sm); padding: 12px;
+}
+.stat-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; color: var(--lokro-text-secondary); margin-bottom: 6px; }
+.stat-head strong { font-size: 20px; color: var(--lokro-text); font-variant-numeric: tabular-nums; }
+.spark { width: 100%; display: block; }
+.bar { height: 6px; border-radius: 999px; background: rgba(148,197,255,0.12); margin: 8px 0 6px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; border-radius: 999px;
+  background: linear-gradient(90deg, var(--lokro-deep-accent), var(--lokro-cyan));
+  box-shadow: 0 0 12px rgba(34,211,238,0.35);
+  transition: width 600ms var(--lokro-easing); }
+.stat-card small { color: var(--lokro-text-muted); font-size: 11px; }
+
+.quick-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
 .glass-btn {
   background: rgba(148,197,255,0.08); color: var(--lokro-text);
   border: 1px solid var(--lokro-border-glass); border-radius: var(--lokro-radius-sm);
@@ -94,6 +159,25 @@ body {
 .glass-btn:hover { box-shadow: var(--lokro-shadow-glow); }
 .glass-btn.active { background: rgba(34,211,238,0.18); border-color: var(--lokro-cyan); }
 
+/* Prozesse */
+.proc-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 14px; font-weight: 600; }
+.proc-list { display: grid; gap: 8px; }
+.proc-row { display: grid; grid-template-columns: 1fr 52px; gap: 4px 10px; align-items: center; padding: 8px 12px;
+  background: rgba(6,9,15,0.45); border: 1px solid rgba(148,197,255,0.08); border-radius: 10px; font-size: 13px; }
+.proc-row .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.proc-row .pc { text-align: right; font-variant-numeric: tabular-nums; color: var(--lokro-light-blue); }
+.proc-row .bar { grid-column: 1 / -1; margin: 0; }
+
+/* Netzwerk */
+.net-big { display: flex; gap: 24px; margin-bottom: 10px; }
+.net-big small { display: block; color: var(--lokro-text-secondary); font-size: 11px; }
+.net-big strong { font-size: 22px; font-variant-numeric: tabular-nums; }
+.big-chart { width: 100%; display: block; background: rgba(6,9,15,0.45);
+  border: 1px solid rgba(148,197,255,0.08); border-radius: 10px; }
+.chips { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.chip { font-size: 12px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--lokro-border-glass); color: var(--lokro-light-blue); }
+
+/* Launcher / Listen */
 #launcher-search {
   width: 100%; margin-bottom: 12px; padding: 10px 14px;
   border-radius: var(--lokro-radius-sm); border: 1px solid var(--lokro-border-glass);
@@ -113,6 +197,7 @@ body {
 .badge { font-size: 11px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--lokro-border-glass); color: var(--lokro-light-blue); }
 .hint { font-size: 12px; color: var(--lokro-text-muted); }
 
+/* Taskbar */
 .taskbar {
   position: sticky; bottom: 16px; margin: 0 auto; max-width: 720px;
   display: flex; gap: 8px; padding: 10px 14px; border-radius: 18px;
@@ -120,10 +205,16 @@ body {
 }
 @media (min-width: 760px) { .taskbar { margin-left: auto; margin-right: auto; } }
 .task-btn {
-  background: transparent; color: var(--lokro-text); border: 1px solid transparent;
-  border-radius: 12px; padding: 10px 16px; cursor: pointer; font-size: 14px;
+  position: relative; background: transparent; color: var(--lokro-text-secondary);
+  border: 1px solid transparent; border-radius: 12px; padding: 10px 16px; cursor: pointer; font-size: 14px;
+  transition: background var(--lokro-motion-base) var(--lokro-easing), color var(--lokro-motion-base);
 }
-.task-btn:hover { background: rgba(34,211,238,0.10); border-color: var(--lokro-border-glass); }
+.task-btn:hover { background: rgba(34,211,238,0.10); color: var(--lokro-text); }
+.task-btn.active { background: rgba(34,211,238,0.14); color: var(--lokro-text); border-color: var(--lokro-border-glass); }
+.task-btn.active::after {
+  content: ""; position: absolute; left: 50%; bottom: 4px; transform: translateX(-50%);
+  width: 5px; height: 5px; border-radius: 999px; background: var(--lokro-cyan);
+}
 .task-btn.danger { color: #F87171; }
 .spacer { flex: 1; }
 
@@ -132,4 +223,9 @@ body {
   background: var(--lokro-glass-bg-strong); border: 1px solid var(--lokro-border-glass);
   border-radius: 12px; padding: 12px 16px; font-size: 14px; box-shadow: var(--lokro-shadow-card);
   animation: reveal 220ms var(--lokro-easing);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .window.opening, .window.closing, .tabpane, .toast { animation: none !important; }
+  .bar i { transition: none !important; }
 }

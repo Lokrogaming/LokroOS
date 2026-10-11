@@ -56,13 +56,14 @@ Details: `ARCHITECTURE.md`. Build-Anleitung: `BUILD.md`. Kritische Regeln: `IMPO
 | Bereich | Status | Bemerkung |
 |---|---|---|
 | Designsystem (Tokens, Glass Cards) | `IMPLEMENTED` | tokens.json/css + Preview verifiziert |
-| Web-Preview (Launcher, Systemübersicht, i18n) | `IMPLEMENTED` | manuell + per Test geprüft |
-| Welcome-Logik (User, Sprache, Fail-safe) | `IMPLEMENTED` | 6 pytest-Tests, alle grün |
-| QML-Shell (Taskbar/Launcher/Übersicht) | `PARTIAL` | Struktur steht, Wayland-Sitzungstest fehlt |
+| Web-Preview (Dashboard, Tabs, Charts, i18n) | `IMPLEMENTED` (Preview!) | Daten simuliert (Badge); Struktur-Tests grün |
+| Welcome-Backend (User, Sprache, Fail-safe) | `IMPLEMENTED` | **Linux-verifiziert** (WSL 24.04.5); 20/20 Tests Win+Linux |
+| Stats-Backend (CPU/RAM/GPU/Net/Tasks) | `IMPLEMENTED` | **Linux-verifiziert**: 16 Kerne, RTX 4060 erkannt |
+| QML-Shell (Taskbar/Launcher/Übersicht/Dashboard) | `PARTIAL` | Gerüst steht (QtQuick 2.15 ✓ für Noble); Sitzungstest fehlt |
 | SDDM/Plymouth/Plasma-Configs | `PARTIAL` | Configs geschrieben, Zielsystem-Test fehlt |
-| Dev-/Gaming-/VPN-Manifeste | `PARTIAL` | Manifeste + Verifikation, Installation erst auf Build-VM |
+| Manifeste + Provisionierung (Node/npm/Wine) | `PARTIAL` | Manifeste verifiziert; `provision-lokroos.sh` dry-run ok |
 | ISO-Build (live-build/Cubic) | `PLANNED` | Skript-Guards implementiert, Pipeline in M2 |
-| VM-Boot-Test (Live, Installer) | `PLANNED` | Keine VM auf diesem Host verfügbar (siehe KNOWN_LIMITATIONS.md) |
+| VM-Boot-Test (Live, Installer) | `PLANNED` | WSL-Ubuntu steht; Nutzer-VM für Boot-Test vorgesehen |
 
 Legende: `IMPLEMENTED` = implementiert + überprüft · `PARTIAL` = teilweise ·
 `PLANNED` = geplant · `BLOCKED` = blockiert · `UNVERIFIED` = vorhanden, nicht ausreichend getestet.

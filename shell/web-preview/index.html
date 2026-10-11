@@ -23,7 +23,7 @@
     <div class="brand">
       <span class="brand-dot" aria-hidden="true"></span>
       <strong>LOKRO</strong><span class="brand-os">OS</span>
-      <span class="version-pill" id="os-version">0.1.0</span>
+      <span class="version-pill" id="os-version">0.2.0</span>
     </div>
     <div class="topbar-right">
       <button class="icon-btn" id="btn-lang" title="Sprache umschalten (DE/EN)">DE</button>
@@ -32,47 +32,103 @@
     </div>
   </header>
 
-  <main class="grid">
-    <section class="glass card" aria-label="Systemübersicht">
-      <h2 data-i18n="overview">Systemübersicht</h2>
-      <dl class="syslist">
-        <div><dt>LokroOS</dt><dd id="stat-lokro">0.1.0 (Prototyp)</dd></div>
-        <div><dt>Ubuntu-Basis</dt><dd id="stat-ubuntu">24.04 LTS (Noble)</dd></div>
-        <div><dt>Desktop</dt><dd>KDE Plasma (Wayland)</dd></div>
-        <div><dt data-i18n="storage">Speicher</dt><dd id="stat-disk">–</dd></div>
-        <div><dt data-i18n="network">Netzwerk</dt><dd id="stat-net">Online (Prototyp)</dd></div>
-      </dl>
-      <div class="quick-row">
-        <button class="glass-btn" id="q-wifi">WLAN</button>
-        <button class="glass-btn" id="q-audio">Audio</button>
-        <button class="glass-btn" id="q-bright">Helligkeit</button>
-        <button class="glass-btn" id="q-vpn">VPN</button>
+  <main id="workspace">
+    <!-- DASHBOARD = Home-Fenster, öffnet automatisch nach Welcome -->
+    <section class="glass window" id="win-dashboard" data-title="Dashboard" aria-label="LokroOS Dashboard">
+      <div class="titlebar">
+        <span class="win-dot" aria-hidden="true"></span>
+        <span class="win-title" data-i18n="dashboard">Dashboard</span>
+        <span class="sim-badge" data-i18n="sim">Preview-Simulation</span>
+        <span class="spacer"></span>
+        <button class="win-btn" data-win="win-dashboard" data-act="min" aria-label="Minimieren">–</button>
+        <button class="win-btn" data-win="win-dashboard" data-act="close" aria-label="Schließen">×</button>
+      </div>
+      <div class="tabbar" role="tablist" id="dash-tabs">
+        <button class="tab active" role="tab" data-tab="pane-overview"><span data-i18n="tab-overview">Übersicht</span></button>
+        <button class="tab" role="tab" data-tab="pane-processes"><span data-i18n="tab-processes">Prozesse</span></button>
+        <button class="tab" role="tab" data-tab="pane-network"><span data-i18n="tab-network">Netzwerk</span></button>
+        <button class="tab-restore" id="tab-restore" title="Geschlossene Tabs wiederherstellen">+</button>
+      </div>
+      <div class="win-body">
+        <div class="tabpane" id="pane-overview" role="tabpanel">
+          <div class="stat-grid">
+            <div class="stat-card"><div class="stat-head"><span data-i18n="cpu">CPU</span><strong id="v-cpu">–</strong></div><canvas class="spark" id="c-cpu" height="56"></canvas><div class="bar"><i id="b-cpu"></i></div><small id="s-cpu">–</small></div>
+            <div class="stat-card"><div class="stat-head"><span data-i18n="ram">RAM</span><strong id="v-ram">–</strong></div><canvas class="spark" id="c-ram" height="56"></canvas><div class="bar"><i id="b-ram"></i></div><small id="s-ram">–</small></div>
+            <div class="stat-card"><div class="stat-head"><span data-i18n="gpu">GPU</span><strong id="v-gpu">–</strong></div><canvas class="spark" id="c-gpu" height="56"></canvas><div class="bar"><i id="b-gpu"></i></div><small id="s-gpu">–</small></div>
+            <div class="stat-card"><div class="stat-head"><span data-i18n="net">Netzwerk</span><strong id="v-net">–</strong></div><canvas class="spark" id="c-net" height="56"></canvas><div class="bar"><i id="b-net"></i></div><small id="s-net">–</small></div>
+          </div>
+          <div class="quick-row">
+            <button class="glass-btn" id="q-wifi">WLAN</button>
+            <button class="glass-btn" id="q-audio">Audio</button>
+            <button class="glass-btn" id="q-bright">Helligkeit</button>
+            <button class="glass-btn" id="q-vpn">VPN</button>
+          </div>
+          <p class="hint" data-i18n="stats-note">Echtzeitwerte vom Zielsystem liefert shell/stats/lokroos-stats.py (CPU/RAM/GPU/Netz/Tasks als JSON).</p>
+        </div>
+        <div class="tabpane" id="pane-processes" role="tabpanel" hidden>
+          <div class="proc-head"><span data-i18n="top-procs">Top-Prozesse</span><span id="proc-count" class="badge">–</span></div>
+          <div id="proc-list" class="proc-list"></div>
+        </div>
+        <div class="tabpane" id="pane-network" role="tabpanel" hidden>
+          <div class="net-big"><div><small>↓ RX</small><strong id="v-rx">–</strong></div><div><small>↑ TX</small><strong id="v-tx">–</strong></div><div><small data-i18n="ifaces">Interfaces</small><strong id="v-if">–</strong></div></div>
+          <canvas class="big-chart" id="c-netbig" height="120"></canvas>
+          <div id="iface-chips" class="chips"></div>
+        </div>
+        <div class="tabs-empty" id="tabs-empty" hidden>
+          <p data-i18n="tabs-empty">Alle Tabs geschlossen.</p>
+          <button class="glass-btn" id="btn-restore-tabs" data-i18n="tabs-restore">Tabs wiederherstellen</button>
+        </div>
       </div>
     </section>
 
-    <section class="glass card" aria-label="Anwendungslauncher">
-      <h2 data-i18n="launcher">Anwendungslauncher</h2>
-      <input id="launcher-search" type="search" placeholder="Suchen …" aria-label="Anwendungen suchen">
-      <div class="launcher-grid" id="launcher-grid"></div>
+    <!-- LAUNCHER-Fenster -->
+    <section class="glass window" id="win-launcher" data-title="Launcher" aria-label="Anwendungslauncher" hidden>
+      <div class="titlebar">
+        <span class="win-dot" aria-hidden="true"></span>
+        <span class="win-title" data-i18n="launcher">Anwendungslauncher</span>
+        <span class="spacer"></span>
+        <button class="win-btn" data-win="win-launcher" data-act="min" aria-label="Minimieren">–</button>
+        <button class="win-btn" data-win="win-launcher" data-act="close" aria-label="Schließen">×</button>
+      </div>
+      <div class="win-body">
+        <input id="launcher-search" type="search" placeholder="Suchen …" aria-label="Anwendungen suchen">
+        <div class="launcher-grid" id="launcher-grid"></div>
+      </div>
     </section>
 
-    <section class="glass card" aria-label="Entwicklerwerkzeuge">
-      <h2 data-i18n="devtools">Entwicklerwerkzeuge</h2>
-      <ul class="tool-list" id="tool-list"></ul>
+    <!-- DEV-Fenster -->
+    <section class="glass window" id="win-dev" data-title="DevTools" aria-label="Entwicklerwerkzeuge" hidden>
+      <div class="titlebar">
+        <span class="win-dot" aria-hidden="true"></span>
+        <span class="win-title" data-i18n="devtools">Entwicklerwerkzeuge</span>
+        <span class="spacer"></span>
+        <button class="win-btn" data-win="win-dev" data-act="min" aria-label="Minimieren">–</button>
+        <button class="win-btn" data-win="win-dev" data-act="close" aria-label="Schließen">×</button>
+      </div>
+      <div class="win-body"><ul class="tool-list" id="tool-list"></ul></div>
     </section>
 
-    <section class="glass card" aria-label="Gaming">
-      <h2>Gaming &amp; Proton</h2>
-      <ul class="tool-list" id="gaming-list"></ul>
-      <p class="hint" data-i18n="wine-hint">.exe-Dateien werden nicht automatisch geöffnet – Rechtsklick → „Mit Wine ausführen“.</p>
+    <!-- GAMING-Fenster -->
+    <section class="glass window" id="win-game" data-title="Gaming" aria-label="Gaming" hidden>
+      <div class="titlebar">
+        <span class="win-dot" aria-hidden="true"></span>
+        <span class="win-title">Gaming &amp; Proton</span>
+        <span class="spacer"></span>
+        <button class="win-btn" data-win="win-game" data-act="min" aria-label="Minimieren">–</button>
+        <button class="win-btn" data-win="win-game" data-act="close" aria-label="Schließen">×</button>
+      </div>
+      <div class="win-body">
+        <ul class="tool-list" id="gaming-list"></ul>
+        <p class="hint" data-i18n="wine-hint">.exe-Dateien werden nicht automatisch geöffnet – Rechtsklick → „Mit Wine ausführen“.</p>
+      </div>
     </section>
   </main>
 
   <footer class="taskbar glass">
-    <button class="task-btn" data-app="Terminal">Terminal</button>
-    <button class="task-btn" data-app="VS Code">VS Code</button>
-    <button class="task-btn" data-app="Steam">Steam</button>
-    <button class="task-btn" data-app="Dateien">Dateien</button>
+    <button class="task-btn" data-open="win-dashboard">◉ Dashboard</button>
+    <button class="task-btn" data-open="win-launcher">▣ Launcher</button>
+    <button class="task-btn" data-open="win-dev">◈ Dev</button>
+    <button class="task-btn" data-open="win-game">🎮 Gaming</button>
     <span class="spacer"></span>
     <button class="task-btn danger" id="btn-power">⏻</button>
   </footer>

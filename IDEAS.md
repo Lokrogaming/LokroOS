@@ -43,6 +43,10 @@
 
 ## Systemverwaltung
 
+- **Stats-Dashboard (CPU/RAM/GPU/Netz/Tasks, Tabs schließ-/minimierbar)** – Backend
+  `shell/stats/lokroos-stats.py` + Preview-Dashboard fertig und Linux-verifiziert.
+  Nutzen: Systemübersicht (Kap. 8 Pflicht). Aufwand: mittel. Priorität: hoch.
+  Status: umgesetzt (Backend + Preview), QML-Anbindung in Arbeit.
 - **LokroOS-Info-Center** – Version (LokroOS+Ubuntu), Speicher, Hardware, Update-Shortcuts.
   Nutzen: Übersicht (Kap. 8 Pflicht). Aufwand: mittel. Priorität: hoch. Status: geplant.
 - **Treiber-Assistent** – `ubuntu-drivers`-Frontend (NVIDIA nur bei HW-Nachweis).

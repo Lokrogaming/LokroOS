@@ -2,7 +2,8 @@
 
 > **Pflichtlektüre für jeden Coding-Agent.** Lies zuerst `AGENTS.md`, `IMPORTANT.md`
 > und bei Erweiterungen `IDEAS.md`. Prüfe danach gezielt nur aufgabenrelevante Dateien
-> (Docs = Einstieg, nicht Ersatz für Codeprüfung). Stand: 2026-10-11, Version 0.1.0.
+> (Docs = Einstieg, nicht Ersatz für Codeprüfung). Stand: 2026-10-11, Version 0.2.0.
+> Schichten strikt trennen (Preview ≠ Shell ≠ System ≠ ISO) – Details in `ARCHITECTURE.md` §0.
 
 ## 1. Projektziel & Designphilosophie
 
@@ -20,24 +21,31 @@ Blur, Motion), konsistent in CSS, QML und Docs.
   Cubic/live-build/Calamares + Plasma 5.27). Evaluierung in M3.
 - Desktop: KDE Plasma + Wayland (`kubuntu-desktop`, `plasma-workspace-wayland`), Login SDDM,
   Boot Plymouth, Installer Calamares. Dev-Host: Windows 11 (Ryzen 7 9700X, 32 GB) –
-  ISO-Builds **nur** auf Ubuntu-Build-VM.
+  ISO-Builds **nur** auf Ubuntu (WSL-Distro oder Build-VM).
+- Shell-Stack (apt-verifiziert 2026-10-11 auf Noble): **QML2 (QtQuick 2.15, Qt 5.15.13)**
+  auf **Plasma 5.27.12** + `layer-shell-qt`; C++ nur bei Bedarf (aktuell keins nötig),
+  **kein** Custom-Kernel (Stock-Ubuntu-Kernel). Qt6/Plasma 6 erst beim 26.04-Rebase (M3+).
+- Testumgebung: WSL-`Ubuntu-24.04` (24.04.5 LTS, Python 3.12) auf dem Dev-Host –
+  Python-Backends laufen dort **echt** (keine VM nötig für Schicht 3).
 - Sprache: DE/EN via Systemsprache (`$LANG`/Plasma-Locale), Fallback EN.
 - Updates: **kein eigenes System** – APT + PackageKit/Discover.
 
 ## 3. Projektstruktur
 
 ```
-VERSION                          # 0.1.0 (SemVer)
+VERSION                          # 0.2.0 (SemVer)
 branding/tokens.json             # Design-Tokens (Wahrheit) | .css (Web) | logo.svg
-shell/qml/Main|Taskbar|Launcher|SystemOverview.qml   # Plasma-Shell (Qt 6/QtQuick)
-shell/welcome/lokroos-welcome.py # Welcome-Backend (getpass/$LANG → stdout-JSON, Exit 0)
+shell/qml/Main|Taskbar|Launcher|SystemOverview|Dashboard.qml  # Native Shell (QML2, PARTIAL)
+shell/welcome/lokroos-welcome.py # Welcome-Backend (IMPLEMENTED, Linux-verifiziert)
+shell/stats/lokroos-stats.py     # Stats-Backend CPU/RAM/GPU/Net/Tasks (IMPLEMENTED, Linux-verifiziert)
 shell/welcome/*.desktop, welcome.qml                 # Autostart + Overlay (modelless)
-shell/web-preview/index.html|styles.css|app.js        # Ausführbarer M1-Prototyp
+shell/web-preview/index.html|styles.css|app.js        # NUR visueller Prototyp (simulierte Daten!)
 config/plasma| sddm| plymouth/   # Zielsystem-Konfigurationen (/etc)
 packages/manifest-{base,dev,gaming,vpn}.json         # Versionierte Paketlisten
-iso/build-iso.sh                 # Guards + Manifest-Check + live-build-Pipeline (M2)
+iso/build-iso.sh | iso/provision-lokroos.sh          # ISO-Guards / VM-Provisionierung (PARTIAL)
 scripts/check-env|verify-manifests|validate-tokens.py
-tests/test_welcome.py (6) | test_project.py (5)      # pytest, 11 Tests
+tests/test_welcome.py (6) | test_stats.py (8) | test_project.py (6)  # 20 Tests, Win+Linux grün
+tests/fixtures/proc/             # Fake-/proc (stat, meminfo, net_dev)
 docs/INSTALL.md | MAINTENANCE.md
 README|BUILD|ARCHITECTURE|KNOWN_LIMITATIONS.md | AGENTS|IDEAS|IMPORTANT.md
 ```
@@ -50,7 +58,8 @@ Shell↔System nur nativ: D-Bus/NetworkManager, PipeWire, PackageKit, `loginctl`
 (PolicyKit) – kein Root-Daemon. Welcome→Shell: Einweg-JSON, kein Passwort.
 VPN: nur App-Öffnung + lesender Status. Gaming: Steam (multiverse) + Proton via Steam,
 Wine nur explizit („Mit Wine ausführen“/Bottles), **keine** `.exe`-Auto-Assoziation
-(per Test erzwungen). Details: `ARCHITECTURE.md`.
+(per Test erzwungen). Stats: `executable`-Datenquelle → `lokroos-stats.py --once`
+(JSON, 2-s-Polling). Schichtenmodell + Belegmatrix: `ARCHITECTURE.md` §0–§1.
 
 ## 5. Designsystem (Kurzreferenz)
 
@@ -69,11 +78,14 @@ Glass-Cards, Pill-Badges, min. Kontrast Secondary-Text, Fokus-Ringe sichtbar.
 
 ## 7. Feature-Status (ehrlich pflegen!)
 
-- `IMPLEMENTED`: Tokens+CSS, Web-Preview (Launcher/i18n/Uhr/Toasts), Welcome-Backend (6 Tests grün).
-- `PARTIAL`: QML-Shell, SDDM/Plymouth/Plasma-Configs, Manifeste (definiert+verifiziert, Installation erst VM).
+- `IMPLEMENTED`: Tokens+CSS, Web-Preview (Dashboard-Fenster, schließbare Tabs, Charts, i18n),
+  Welcome-Backend + Stats-Backend (**beide Linux-verifiziert** im WSL-Ubuntu 24.04.5).
+- `PARTIAL`: QML-Shell (+Dashboard.qml), SDDM/Plymouth/Plasma-Configs, Manifeste,
+  `provision-lokroos.sh` (bash -n + --dry-run ok, Echtlauf ausstehend).
 - `PLANNED`: live-build-Pipeline, VM-Boot-Test (Live/Installer/Apps/Updates/Netz/Audio).
-- `BLOCKED`: ISO-Build + Sitzungstest bis Build-VM steht (kein WSL-Distro/Docker/VM auf Host).
+- `BLOCKED`: derzeit nichts (WSL-Ubuntu steht; echte Plasma-Wayland-Sitzung weiter ohne Display).
 - `UNVERIFIED`: QML/SDDM/Plymouth ohne echte Wayland-Sitzung. – **Niemals Plan mit Funktionierendem verwechseln.**
+- Tests: **20/20 grün auf Windows UND Linux** (ein Linux-spezifischer getpass-Fall wurde gefunden + gefixt).
 
 ## 8. Programme & Methoden
 
@@ -94,13 +106,17 @@ Handbuch: `docs/INSTALL.md`, Wartung: `docs/MAINTENANCE.md`, Anleitung: `BUILD.m
 
 ## 10. Technologien & Befehle
 
-Python 3 (Backend/Skripte/Tests), Qt 6/QtQuick/QML (Shell), HTML/CSS/JS **nur** für
-M1-Preview (kein Electron im Produkt), Bash (Build), Calamares, SDDM, Plymouth, APT/PackageKit.
+Python 3 (native Backends welcome/stats + Tests/Build-Helfer), QML2-Shell
+(QtQuick 2.15 / Plasma 5.27, C++ nur bei begründeter Lücke), HTML/CSS/JS **nur**
+für den visuellen Prototyp (simulierte Daten, fließt nie in ISO; kein Electron),
+Bash (Provision/Build), Calamares, SDDM, Plymouth, APT/PackageKit.
 ```bash
-python -m pytest tests/ -v
+python -m pytest tests/ -v                          # 20 Tests (Win + WSL-Linux ausführen!)
 python scripts/verify-manifests.py --root . && python scripts/validate-tokens.py
 python shell/welcome/lokroos-welcome.py --json-only
-python scripts/check-env.py
+python shell/stats/lokroos-stats.py --check         # auf Linux: echte /proc-Werte
+wsl -d Ubuntu-24.04 -- bash -c "cd /mnt/c/Users/lokro/projekte/lokroos && python3 -m pytest tests/"
+sudo ./iso/provision-lokroos.sh --dry-run           # nur Ubuntu 24.04 (VM); Echtlauf mit --yes
 sudo ./iso/build-iso.sh --profile noble --out iso/output   # nur Ubuntu-Build-VM!
 ```
 
@@ -109,14 +125,16 @@ sudo ./iso/build-iso.sh --profile noble --out iso/output   # nur Ubuntu-Build-VM
 Kein Host-Eingriff (Bootloader/Partitionen/Netz), keine Secrets im Repo, eine Node-Version,
 kein NVIDIA blind, keine `.exe`-Auto-Assoziation, kein eigenes Update-System, keine
 Root-Daemons (nur loginctl/PolicyKit/PackageKit), Username nur via `text:`/`textContent`.
+Schichtendisziplin: Web-Preview-Code darf **nie** in ISO/Shell wandern (nur Tokens/QML/Python).
 
 ## 12. Bekannte Schulden & Phase
 
-Schulden: QML-Sitzungstest, SDDM/Plymouth-Zieltest, M2-Pipeline, VM-Matrix (Boot/Live/
-Installer/Login/Apps/Updates/Netz/Audio). Phase: **M1 fast fertig** (Docs+Push fehlen
-noch); nächste Aufgaben: (1) Tests grün belegen, (2) Repo erstellen+pushen, (3) Build-VM
-aufsetzen, (4) M2-Pipeline + VM-Tests. Blockierte Arbeit als `BLOCKED` markieren, nicht
-scheinlösen. Einschränkungen: `KNOWN_LIMITATIONS.md`.
+Schulden: QML-Sitzungstest, SDDM/Plymouth-Zieltest, Provision-Echtlauf, M2-Pipeline,
+VM-Matrix (Boot/Live/Installer/Login/Apps/Updates/Netz/Audio). Phase: **M2 läuft**
+(Backends Linux-verifiziert, Dashboard-Preview fertig); nächste Aufgaben:
+(1) Provision-Echtlauf in VM, (2) QML in Plasma-Sitzung testen + an Stats hängen,
+(3) live-build-Pipeline + VM-Boot-Matrix. Blockierte Arbeit als `BLOCKED` markieren,
+nicht scheinlösen. Einschränkungen: `KNOWN_LIMITATIONS.md`.
 
 ## 13. Regeln für Agents (verbindlich)
 

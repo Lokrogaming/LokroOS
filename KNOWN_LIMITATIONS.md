@@ -2,11 +2,12 @@
 
 ## Umgebung (verifiziert)
 
-- Dev-Host: Windows 11 Pro, Ryzen 7 9700X (amd64), 32 GB RAM – **kein Linux-Build-Host**.
-- WSL2: installiert (v2), aber **keine Distribution** registriert → kein ISO-Build möglich.
-- Kein Docker, kein VirtualBox/VMware, kein `lb` (live-build) auf dem Host.
-- Folge: ISO-Build (`PLANNED`), VM-Boot-Test (`PLANNED`) und echte Plasma-Wayland-Sitzung
-  (`UNVERIFIED` für QML/SDDM/Plymouth) sind bis zur Build-VM blockiert.
+- Dev-Host: Windows 11 Pro, Ryzen 7 9700X (amd64), 32 GB RAM.
+- **WSL-`Ubuntu-24.04` (24.04.5 LTS) läuft auf dem Host** – Python-Backends (Welcome,
+  Stats) sind dort echt verifiziert; `apt-cache` belegt Plasma 5.27.12 / Qt 5.15.13 /
+  layer-shell-qt. Kein Docker, keine Grafikausgabe (kein Display-Server) in WSL.
+- Folge: QML-/SDDM-/Plymouth-Sitzungstests (`UNVERIFIED`) und ISO-Build/VM-Boot
+  (`PLANNED`) brauchen weiter eine VM mit Display (Nutzer-VM vorgesehen).
 
 ## Funktional
 

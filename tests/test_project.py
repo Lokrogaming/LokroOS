@@ -57,5 +57,24 @@ def test_web_preview_files_exist():
         assert (preview / f).is_file(), f
     html = (preview / "index.html").read_text(encoding="utf-8")
     assert "welcome-overlay" in html and "launcher-grid" in html
+    # Dashboard-Home (v0.2.0): Fenster, Tabs, Charts
+    for marker in ("win-dashboard", "dash-tabs", "pane-overview",
+                   "pane-processes", "pane-network", "c-cpu", "c-netbig",
+                   "proc-list", "tab-restore"):
+        assert marker in html, marker
     js = (preview / "app.js").read_text(encoding="utf-8")
     assert "Welcome back" in js and "Willkommen zurück" in js
+    for marker in ("closeTab", "restoreTabs", "tickStats", "drawSpark",
+                   "lokroos-stats.py"):
+        assert marker in js, marker
+    css = (preview / "styles.css").read_text(encoding="utf-8")
+    assert "prefers-reduced-motion" in css and ".tabpane" in css
+
+
+def test_stats_backend_exists():
+    stats = ROOT / "shell" / "stats" / "lokroos-stats.py"
+    assert stats.is_file()
+    text = stats.read_text(encoding="utf-8")
+    for marker in ("read_cpu_times", "read_mem", "read_net_counters",
+                   "read_tasks", "read_gpu", "--loop", "supported"):
+        assert marker in text, marker
