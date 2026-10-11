@@ -80,7 +80,8 @@ else
   warn "/etc/calamares fehlt (Calamares-Paket?). Installer ohne Brand."
 fi
 
-# --- Install-Icon (Live-Session + Skel) ---cat > /usr/share/applications/lokroos-install.desktop <<'EOF'
+# --- Install-Icon (Live-Session + Skel) ---
+cat > /usr/share/applications/lokroos-install.desktop <<'EOF'
 [Desktop Entry]
 Type=Application
 Name=Install LokroOS
