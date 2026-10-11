@@ -1,0 +1,22 @@
+# LokroOS ISO-Bootmenue – Vorlage fuer Cubic (Boot-Tab) / live-build grub.cfg.
+# Hinweis: Kernel-/Initrd-Pfade setzt Cubic beim Packen automatisch ein bzw.
+# live-build generiert sie; hier zaehlen NUR Eintragsnamen + Parameter.
+# Stil: schlicht (Text, keine GfxTheme-Abhaengigkeit) – Beschluss 2026-10-11.
+
+menuentry "Try or Install LokroOS" {
+  set gfxpayload=keep
+  linux /casper/vmlinuz boot=casper quiet splash ---
+  initrd /casper/initrd
+}
+
+menuentry "LokroOS (safe graphics)" {
+  set gfxpayload=keep
+  linux /casper/vmlinuz boot=casper nomodeset quiet splash ---
+  initrd /casper/initrd
+}
+
+menuentry "Check disc for defects" {
+  set gfxpayload=keep
+  linux /casper/vmlinuz boot=casper integrity-check quiet splash ---
+  initrd /casper/initrd
+}

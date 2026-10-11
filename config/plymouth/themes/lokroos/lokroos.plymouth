@@ -1,0 +1,8 @@
+[LokroOS]
+Name=LokroOS
+Description=LokroOS dark glass boot splash (Logo + Fortschritt, dezenter Cyan-Glow)
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/lokroos
+ScriptFile=/usr/share/plymouth/themes/lokroos/lokroos.script

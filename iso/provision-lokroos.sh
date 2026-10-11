@@ -124,5 +124,44 @@ run cp -r "$ROOT/shell/qml" /usr/share/lokroos/
 run cp "$ROOT/branding/lokroos-logo.svg" /usr/share/lokroos/
 run cp "$ROOT/config/plasma/kdeglobals" /etc/skel/.config/
 
+# --- Boot-Branding: Plymouth-Theme + installierter GRUB + Calamares-Brand ---
+THEME_SRC="$ROOT/config/plymouth/themes/lokroos"
+if [[ -f "$THEME_SRC/lokroos.plymouth" ]]; then
+  log "Deploye Plymouth-Theme …"
+  run mkdir -p /usr/share/plymouth/themes/lokroos
+  run cp "$THEME_SRC/"lokroos.plymouth "$THEME_SRC/"lokroos.script \
+    "$THEME_SRC/"logo.png "$THEME_SRC/"bar.png "$THEME_SRC/"box.png \
+    /usr/share/plymouth/themes/lokroos/
+  if command -v plymouth-set-default-theme >/dev/null 2>&1; then
+    run plymouth-set-default-theme -R lokroos
+  else
+    log "WARN: plymouth nicht vorhanden – Theme nur abgelegt."
+  fi
+fi
+log "Setze installierten GRUB auf LokroOS …"
+run mkdir -p /etc/default/grub.d
+run cp "$ROOT/config/grub/installed-lokroos.cfg" /etc/default/grub.d/lokroos.cfg
+if command -v update-grub >/dev/null 2>&1; then
+  run update-grub
+else
+  log "WARN: update-grub nicht vorhanden (z.B. Container/WSL ohne Bootloader)."
+fi
+if [[ -d /etc/calamares ]]; then
+  log "Deploye Calamares-Brand …"
+  run mkdir -p /etc/calamares/branding/lokroos
+  run cp "$ROOT/installer/calamares/lokroos/branding.desc" \
+    "$ROOT/installer/calamares/lokroos/show.qml" \
+    "$ROOT/installer/calamares/lokroos/logo.svg" \
+    /etc/calamares/branding/lokroos/
+  run cp /etc/calamares/settings.conf /etc/calamares/settings.conf.lokroos-bak
+  if grep -q '^branding:' /etc/calamares/settings.conf; then
+    run sed -i 's/^branding:.*/branding: lokroos/' /etc/calamares/settings.conf
+  else
+    run bash -c 'echo "branding: lokroos" >> /etc/calamares/settings.conf'
+  fi
+else
+  log "WARN: /etc/calamares fehlt – Brand übersprungen (Calamares-Paket nötig)."
+fi
+
 log "Fertig. Neustarten, einloggen → Welcome-Gruß → Dashboard (Home)."
 log "Stats prüfen: /usr/lib/lokroos/lokroos-stats.py --check"

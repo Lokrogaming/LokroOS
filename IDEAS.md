@@ -54,6 +54,12 @@
 
 ## Installer & ISO
 
+- **Calamares-LokroOS-Brand + QML-Slideshow** – `installer/calamares/lokroos/` steht
+  (branding.desc, show.qml API 2, DE/EN). Nutzen: eigener Install-Screen.
+  Aufwand: mittel. Priorität: hoch. Status: in Arbeit (Abnahme per `calamares -c` fehlt).
+- **Plymouth-LokroOS-Theme + GRUB-Branding** – Theme-Dateien generiert, installierter
+  GRUB schlicht gebrandet. Nutzen: Boot-Identität. Aufwand: klein. Priorität: hoch.
+  Status: umgesetzt (Dateien + Tests), VM-Reboot-Test in Arbeit.
 - **Unbeaufsichtigte OEM-Installation** – Preseed-Profil für Flotten.
   Nutzen: Deployments. Aufwand: mittel. Priorität: niedrig. Status: Idee.
 - **Delta-Updates für ISO** – zsync-Torrents für Releases.

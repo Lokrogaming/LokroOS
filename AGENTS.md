@@ -2,7 +2,7 @@
 
 > **Pflichtlektüre für jeden Coding-Agent.** Lies zuerst `AGENTS.md`, `IMPORTANT.md`
 > und bei Erweiterungen `IDEAS.md`. Prüfe danach gezielt nur aufgabenrelevante Dateien
-> (Docs = Einstieg, nicht Ersatz für Codeprüfung). Stand: 2026-10-11, Version 0.2.0.
+> (Docs = Einstieg, nicht Ersatz für Codeprüfung). Stand: 2026-10-11, Version 0.3.0.
 > Schichten strikt trennen (Preview ≠ Shell ≠ System ≠ ISO) – Details in `ARCHITECTURE.md` §0.
 
 ## 1. Projektziel & Designphilosophie
@@ -79,9 +79,15 @@ Glass-Cards, Pill-Badges, min. Kontrast Secondary-Text, Fokus-Ringe sichtbar.
 ## 7. Feature-Status (ehrlich pflegen!)
 
 - `IMPLEMENTED`: Tokens+CSS, Web-Preview (Dashboard-Fenster, schließbare Tabs, Charts, i18n),
-  Welcome-Backend + Stats-Backend (**beide Linux-verifiziert** im WSL-Ubuntu 24.04.5).
-- `PARTIAL`: QML-Shell (+Dashboard.qml), SDDM/Plymouth/Plasma-Configs, Manifeste,
-  `provision-lokroos.sh` (bash -n + --dry-run ok, Echtlauf ausstehend).
+  Welcome-Backend + Stats-Backend (**beide Linux-verifiziert** im WSL-Ubuntu 24.04.5),
+  Plymouth-Theme (Assets generiert, 6 Boot-Tests), GRUB-Snippets (schlicht).
+- `PARTIAL`: QML-Shell (+Dashboard.qml), SDDM/Plasma-Configs, Manifeste,
+  `provision-lokroos.sh` (inkl. Theme-/GRUB-/Calamares-Deploy, Echtlauf ausstehend),
+  Calamares-Brand (`branding.desc` + `show.qml` API 2 DE/EN, Abnahme ausstehend).
+- `PARTIAL`: QML-Shell (+Dashboard.qml), SDDM/Plasma-Configs, Manifeste,
+  `provision-lokroos.sh` (inkl. Theme-/GRUB-/Calamares-Deploy, Echtlauf ausstehend),
+  Calamares-Brand (`branding.desc` + `show.qml` API 2 DE/EN, Abnahme ausstehend).
+- `PLANNED`: Cubic-ISO-Build in der VM (`iso/cubic-preset.json`), live-build-Pipeline,
 - `PLANNED`: live-build-Pipeline, VM-Boot-Test (Live/Installer/Apps/Updates/Netz/Audio).
 - `BLOCKED`: derzeit nichts (WSL-Ubuntu steht; echte Plasma-Wayland-Sitzung weiter ohne Display).
 - `UNVERIFIED`: QML/SDDM/Plymouth ohne echte Wayland-Sitzung. – **Niemals Plan mit Funktionierendem verwechseln.**

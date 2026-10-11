@@ -1,6 +1,6 @@
 # LokroOS ARCHITECTURE.md – Systemarchitektur (ehrlicher Stand)
 
-Stand: 2026-10-11 · Version 0.2.0.
+Stand: 2026-10-11 · Version 0.3.0.
 
 ## 0. Leseanweisung: vier Schichten, vier Wahrheiten
 
@@ -28,7 +28,10 @@ Provisionierung/Build. QML (+ C++ nur bei Bedarf, siehe §3) für Schicht 2.
 | Welcome-Backend (`lokroos-welcome.py`) | `IMPLEMENTED` + **Linux-verifiziert** | WSL Ubuntu 24.04.5: `{"user":"root","lang":"de",…}`; 6 Tests auf Win **und** Linux grün |
 | Stats-Backend (`lokroos-stats.py`) | `IMPLEMENTED` + **Linux-verifiziert** | WSL: 16 Kerne, 4,9 % RAM, `eth0`, **RTX 4060 via nvidia-smi erkannt** (6 %/1199 MB); 8 Tests Win+Linux grün |
 | QML-Shell (Main/Taskbar/Launcher/SystemOverview/Dashboard) | `PARTIAL`, Sitzung `UNVERIFIED` | Code vorhanden; Imports (`QtQuick 2.15`) passen zu Qt 5.15.13 auf Noble (apt-Beleg §3); kein Sitzungstest |
-| SDDM/Plymouth/Plasma-Configs | `PARTIAL`, Ziel `UNVERIFIED` | Geschrieben, keine Zielsession |
+| Plymouth-Theme (`themes/lokroos/`) | `IMPLEMENTED`, Ziel `UNVERIFIED` | Assets deterministisch generiert (`render-assets.py --check` grün), 6 Boot-Tests; VM-Reboot-Test ausstehend |
+| GRUB (ISO-Snippet schlicht + installierte Config) | `IMPLEMENTED`, Ziel `UNVERIFIED` | Einträge „Try or Install LokroOS“ als Vorlage; `GRUB_DISTRIBUTOR=LokroOS` per Provision |
+| Calamares-Brand (`installer/calamares/lokroos/`) | `PARTIAL`, Ziel `UNVERIFIED` | `branding.desc` + `show.qml` (API 2, DE/EN) + Tests; `calamares -c`-Abnahme ausstehend |
+| SDDM/Plasma-Configs | `PARTIAL`, Ziel `UNVERIFIED` | Geschrieben, keine Zielsession |
 | Paketmanifeste | `PARTIAL` | `verify-manifests.py` grün (38 Pakete); Installation erst per Provision |
 | `provision-lokroos.sh` | `PARTIAL` | `bash -n` ok, `--dry-run` ok; Echtlauf in VM ausstehend |
 | ISO/live-build-Pipeline | `PLANNED` | Nur Guards implementiert |
@@ -36,7 +39,8 @@ Provisionierung/Build. QML (+ C++ nur bei Bedarf, siehe §3) für Schicht 2.
 ## 2. Zielbild (Schichten 2–4)
 
 ```
-Boot (Plymouth) → Login (SDDM) → Welcome-Overlay (modelless, Fail-safe)
+Boot (Plymouth „lokroOS“) → ISO-Menü („Try or Install LokroOS“, schlicht)
+ → Login (SDDM) → Welcome-Overlay (modelless, Fail-safe)
  → Plasma-Wayland + LokroOS-QML-Shell (Single-Instance, Panel Auto-Hide)
 ```
 
@@ -84,13 +88,17 @@ schreiben, damit der Port möglich bleibt.
 1. **Schicht 1 einfrieren:** Preview bleibt Referenz; jede Designänderung erst in
    `tokens.json`, dann Preview, dann QML (eine Richtung, kein Drift).
 2. **Schicht 3 in VM validieren:** `provision-lokroos.sh --dry-run` → Echtlauf
-   (Node/Wine/Dev-Stack), Welcome + Stats in echter Sitzung belegen.
+   (Node/Wine/Dev-Stack **+ Plymouth-Theme + GRUB + Calamares-Brand**), Welcome +
+   Stats in echter Sitzung belegen; VM-Reboot zeigt LokroOS-Splash.
 3. **Schicht 2 in Sitzung bringen:** QML via `qmlscene`/Plasma-Sitzung testen,
    `executable`-Quelle an `lokroos-stats.py` hängen, Taskbar auf LayerShell.
 4. **C++ nur bei Lücke:** Falls QML irgendwo prinzipiell nicht hinkommt → kleines,
    begründetes C++-Modul (kein Framework-Umbau).
-5. **Schicht 4 bauen:** live-build-Pipeline + Calamares + VM-Boot-Matrix
-   (Boot/Live/Installer/Login/Desktop/Apps/Updates/Netz/Audio).
+5. **Schicht 4 bauen:** Cubic-ISO in der VM (`iso/cubic-preset.json` als Vorlage:
+   Boot-Einträge umbenennen, Chroot = Provision) + Calamares-Brand-Abnahme, dann
+   live-build-Pipeline + VM-Boot-Matrix
+   (Boot/Live/Installer/Login/Desktop/Apps/Updates/Netz/Audio). Live-Initrd-Splash
+   bewusst später (Original-Initrd-Einschränkung, dokumentiert in `BUILD.md`).
 6. **M3+:** 26.04-/Plasma-6-Rebase evaluieren.
 
 **Stufenregel:** Ein Status wird erst auf `IMPLEMENTED` gehoben, wenn er auf dem

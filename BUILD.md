@@ -1,6 +1,6 @@
 # LokroOS BUILD.md – Build-, Test- und ISO-Anleitung
 
-Stand: 2026-10-11 · Version: 0.1.0 · Basis: Ubuntu 24.04 LTS (Noble), amd64.
+Stand: 2026-10-11 · Version: 0.3.0 · Basis: Ubuntu 24.04 LTS (Noble), amd64.
 
 ## 1. Basisentscheidung (verifiziert am 2026-10-11)
 
@@ -42,6 +42,26 @@ sudo ./iso/build-iso.sh --profile noble --out iso/output
 # → iso/output/lokroos-*.iso + Build-Log
 ```
 
+## 4b. Cubic-Prototyp-ISO (in der Kubuntu-VM, GUI vorhanden)
+
+Vorlage: `iso/cubic-preset.json` (manuell in Cubic umsetzen – kein Maschinenformat).
+
+1. Cubic installieren: `sudo apt-add-repository universe && sudo apt install --no-install-recommends cubic`
+   (oder PPA `cubic-wizard/release` für neuere Version).
+2. Basis-ISO `kubuntu-24.04.5-desktop-amd64.iso` wählen, Chroot öffnen.
+3. Im Chroot die Provisionsschritte aus `iso/provision-lokroos.sh` übernehmen
+   (Repos, Kern-Pakete, Shell-Deploy, **Plymouth-Theme, GRUB-Config, Calamares-Brand**).
+4. Vor dem Packen prüfen: `plymouth-set-default-theme` → `lokroos`,
+   `grep branding /etc/calamares/settings.conf` → `lokroos`, `node/npm/wine --version`.
+5. Boot-Tab: Einträge aus `config/grub/iso-entries.cfg.snippet`
+   („Try or Install LokroOS“, „LokroOS (safe graphics)“) – Kernel-Pfade setzt Cubic.
+6. ISO packen → in neuer VM booten → Bootmenü, Splash (installiert), Installer-Brand prüfen.
+
+Bekannte Einschränkung (Cubic-Upstream, ab 23.04): Der **Live**-Boot nutzt die
+Original-Initrd der Basis-ISO – unser Plymouth-Theme greift dort erst nach
+eigenem Initrd-Neubau; das **installierte** System zeigt es sofort. Deshalb ist
+der Live-Splash bewusst später eingeplant (siehe `ARCHITECTURE.md` §5).
+
 Trennung Live/installed: Live-Session via Casper (`try LokroOS`), Installer
 Calamares mit eigenem Branding; keine Dev-Dateien/Secrets im Image
 (`.gitignore` + Manifest-Audit, siehe `ARCHITECTURE.md`).
@@ -49,7 +69,8 @@ Calamares mit eigenem Branding; keine Dev-Dateien/Secrets im Image
 ## 5. Tests (M1, auf diesem Host ausführbar)
 
 ```bash
-python -m pytest tests/ -v          # Welcome (6) + Projekt (5) = 11 Tests
+python -m pytest tests/ -v          # 28 Tests (Win + WSL-Linux ausführen!)
+python branding/render-assets.py --check  # Plymouth-PNGs vorhanden/gültig
 python scripts/check-env.py          # Umgebungsübersicht
 ```
 

@@ -1,0 +1,22 @@
+# LokroOS Calamares-Branding (Paketname spaeter: calamares-settings-lokroos).
+# Separat paketierbar – kein Calamares-Fork noetig. Beschluss: Calamares + QML.
+componentName:  lokroos
+productName:    LokroOS
+version:        0.3.0
+shortVersion:   0.3
+versionedName:  LokroOS 0.3.0
+productUrl:     https://github.com/Lokrogaming/LokroOS
+supportUrl:     https://github.com/Lokrogaming/LokroOS/issues
+knownIssuesUrl: https://github.com/Lokrogaming/LokroOS/blob/main/KNOWN_LIMITATIONS.md
+releaseNotesUrl: https://github.com/Lokrogaming/LokroOS/releases
+slideshow:      show.qml
+slideshowAPI:   2
+
+images:
+  productLogo:    logo.svg
+  productWelcome: logo.svg
+
+style:
+  SidebarBackground: "#0E141D"
+  SidebarText:       "#F1F5F9"
+  SidebarTextSelect: "#22D3EE"

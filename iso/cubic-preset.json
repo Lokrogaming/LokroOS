@@ -1,0 +1,22 @@
+{
+  "_comment": "LokroOS Cubic-Vorlage (MANUELLE Vorlage für die Cubic-GUI, kein Maschinenformat). Basis: Kubuntu 24.04.5 ISO. Ablaufdetails: BUILD.md Abschnitt Cubic.",
+  "base_iso": "kubuntu-24.04.5-desktop-amd64.iso",
+  "volume_id": "LokroOS 0.3.0 amd64",
+  "kernel_policy": "Original-Kernel der Basis-ISO zum Bootstrap behalten (Cubic-Empfehlung ab 23.04); Plymouth-Live-Splash folgt per Initrd-Schritt.",
+  "boot_entries": {
+    "_comment": "Im Cubic Boot-Tab eintragen bzw. prüfen – Vorlage: config/grub/iso-entries.cfg.snippet",
+    "entries": ["Try or Install LokroOS", "LokroOS (safe graphics)", "Check disc for defects"]
+  },
+  "chroot_steps": [
+    "LokroOS-Repo nach /opt/lokroos klonen (oder kopieren)",
+    "Abschnitte aus iso/provision-lokroos.sh übernehmen: Repos, Kern-Pakete, Shell-Deploy, Plymouth-Theme, GRUB-Config, Calamares-Brand",
+    "plymouth-set-default-theme -R lokroos && update-grub",
+    "update-initramfs -u && apt clean"
+  ],
+  "verify_before_pack": [
+    "plymouth-set-default-theme zeigt lokroos",
+    "grep branding /etc/calamares/settings.conf -> lokroos",
+    "node/npm/wine --version ok",
+    "/usr/lib/lokroos/lokroos-stats.py --check ok"
+  ]
+}
