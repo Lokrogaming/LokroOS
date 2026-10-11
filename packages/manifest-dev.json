@@ -1,0 +1,26 @@
+{
+  "_comment": "LokroOS Paketmanifest – Entwicklerwerkzeuge. Node NUR via NodeSource (eine Version, passend zu npm). Kein nvm-Mischmasch im Image.",
+  "repos": [
+    { "name": "nodesource", "note": "https://deb.nodesource.com/setup_22.x (Node 22 LTS, npm gebündelt)" },
+    { "name": "vscode", "note": "https://packages.microsoft.com/repos/code (offizielles Microsoft-Repo)" },
+    { "name": "gh-cli", "note": "https://cli.github.com/packages (offizielles GitHub-CLI-Repo)" }
+  ],
+  "packages": [
+    "nodejs",
+    "git",
+    "gh",
+    "code",
+    "build-essential",
+    "python3-pip", "python3-venv",
+    "konsole"
+  ],
+  "verify": [
+    "node --version",
+    "npm --version",
+    "git --version",
+    "gh --version",
+    "code --version",
+    "python3 --version"
+  ],
+  "desktop_files": ["code.desktop", "org.kde.konsole.desktop"]
+}

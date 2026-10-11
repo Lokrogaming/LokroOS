@@ -1,0 +1,21 @@
+{
+  "_comment": "LokroOS Paketmanifest – Basis (Ubuntu 24.04 LTS Noble, amd64). Installationsreihenfolge beachten.",
+  "distro": { "base": "ubuntu", "release": "24.04", "codename": "noble", "arch": "amd64", "desktop": "kde-plasma + wayland" },
+  "packages": [
+    "kubuntu-desktop",
+    "plasma-workspace-wayland",
+    "sddm",
+    "plymouth",
+    "calamares",
+    "network-manager",
+    "pipewire", "wireplumber", "pipewire-pulse",
+    "powerdevil",
+    "packagekit", "plasma-discover",
+    "konsole",
+    "firefox",
+    "fonts-inter", "fonts-noto",
+    "curl", "wget", "unzip",
+    "openssh-client",
+    "python3"
+  ]
+}

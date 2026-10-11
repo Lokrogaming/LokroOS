@@ -1,0 +1,21 @@
+{
+  "_comment": "LokroOS Paketmanifest – Gaming/Wine. 32-Bit-Libs (i386) erforderlich. NVIDIA-Treiber NUR bei erkannter NVIDIA-Hardware (ubuntu-drivers autoinstall im Installer).",
+  "notes": [
+    "Steam: aus Ubuntu-multiverse (Paket 'steam'), kein Fremd-Skript.",
+    "Proton: via Steam (ProtonUp-Qt optional für GE-Proton).",
+    "Vulkan: mesa-vulkan-drivers (+ :i386) + vulkan-tools zur Verifikation.",
+    ".exe: KEINE Auto-Assoziation; Kontextmenü 'Mit Wine ausführen' + Bottles-Integration.",
+    "Anti-Cheat-Titel (EAC/Vanguard) bleiben dokumentiert eingeschränkt."
+  ],
+  "enable_i386": true,
+  "packages": [
+    "steam",
+    "wine64", "wine32", "winetricks",
+    "bottles",
+    "mesa-vulkan-drivers", "mesa-vulkan-drivers:i386",
+    "vulkan-tools",
+    "gamemode",
+    "mangohud"
+  ],
+  "verify": ["steam --version", "wine --version", "winetricks --version", "vulkaninfo --summary"]
+}

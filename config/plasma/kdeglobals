@@ -1,0 +1,14 @@
+# LokroOS Plasma-Desktop-Konfiguration (wird in ISO via skel + post-install gesetzt)
+# Datei: config/plasma/kdeglobals – dunkles Theme, reduzierte Animationen respektieren
+[General]
+ColorScheme=LokroOSDark
+Name=LokroOS
+
+[KDE]
+AnimationDurationFactor=1.0
+# Bei globaler Barrierefreiheit (reduce motion) setzt Calamares/postinstall:
+# AnimationDurationFactor=0
+
+[Colors:Window]
+BackgroundNormal=14,20,29
+ForegroundNormal=241,245,249

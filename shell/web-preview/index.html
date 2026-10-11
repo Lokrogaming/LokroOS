@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LokroOS Shell – Desktop-Prototyp</title>
+<link rel="stylesheet" href="tokens-preview.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!-- WELCOME OVERLAY: simuliert lokroos-welcome.py nach Login -->
+<div id="welcome-overlay" role="dialog" aria-live="polite" aria-label="Willkommensbildschirm">
+  <div class="welcome-inner">
+    <img src="../../branding/lokroos-logo.svg" alt="LokroOS Logo" class="welcome-logo" onerror="this.style.display='none'">
+    <h1 id="welcome-text" class="welcome-text">Willkommen zurück, <span id="welcome-user">gast</span>!</h1>
+    <div class="welcome-loader" aria-hidden="true"><span></span><span></span><span></span></div>
+  </div>
+</div>
+
+<!-- DESKTOP -->
+<div id="desktop" class="desktop-hidden">
+  <header class="topbar glass">
+    <div class="brand">
+      <span class="brand-dot" aria-hidden="true"></span>
+      <strong>LOKRO</strong><span class="brand-os">OS</span>
+      <span class="version-pill" id="os-version">0.1.0</span>
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn" id="btn-lang" title="Sprache umschalten (DE/EN)">DE</button>
+      <span id="clock" class="clock">--:--</span>
+      <button class="icon-btn avatar" id="btn-user" title="Benutzerprofil">U</button>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="glass card" aria-label="Systemübersicht">
+      <h2 data-i18n="overview">Systemübersicht</h2>
+      <dl class="syslist">
+        <div><dt>LokroOS</dt><dd id="stat-lokro">0.1.0 (Prototyp)</dd></div>
+        <div><dt>Ubuntu-Basis</dt><dd id="stat-ubuntu">24.04 LTS (Noble)</dd></div>
+        <div><dt>Desktop</dt><dd>KDE Plasma (Wayland)</dd></div>
+        <div><dt data-i18n="storage">Speicher</dt><dd id="stat-disk">–</dd></div>
+        <div><dt data-i18n="network">Netzwerk</dt><dd id="stat-net">Online (Prototyp)</dd></div>
+      </dl>
+      <div class="quick-row">
+        <button class="glass-btn" id="q-wifi">WLAN</button>
+        <button class="glass-btn" id="q-audio">Audio</button>
+        <button class="glass-btn" id="q-bright">Helligkeit</button>
+        <button class="glass-btn" id="q-vpn">VPN</button>
+      </div>
+    </section>
+
+    <section class="glass card" aria-label="Anwendungslauncher">
+      <h2 data-i18n="launcher">Anwendungslauncher</h2>
+      <input id="launcher-search" type="search" placeholder="Suchen …" aria-label="Anwendungen suchen">
+      <div class="launcher-grid" id="launcher-grid"></div>
+    </section>
+
+    <section class="glass card" aria-label="Entwicklerwerkzeuge">
+      <h2 data-i18n="devtools">Entwicklerwerkzeuge</h2>
+      <ul class="tool-list" id="tool-list"></ul>
+    </section>
+
+    <section class="glass card" aria-label="Gaming">
+      <h2>Gaming &amp; Proton</h2>
+      <ul class="tool-list" id="gaming-list"></ul>
+      <p class="hint" data-i18n="wine-hint">.exe-Dateien werden nicht automatisch geöffnet – Rechtsklick → „Mit Wine ausführen“.</p>
+    </section>
+  </main>
+
+  <footer class="taskbar glass">
+    <button class="task-btn" data-app="Terminal">Terminal</button>
+    <button class="task-btn" data-app="VS Code">VS Code</button>
+    <button class="task-btn" data-app="Steam">Steam</button>
+    <button class="task-btn" data-app="Dateien">Dateien</button>
+    <span class="spacer"></span>
+    <button class="task-btn danger" id="btn-power">⏻</button>
+  </footer>
+
+  <div id="toast-region" aria-live="polite"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

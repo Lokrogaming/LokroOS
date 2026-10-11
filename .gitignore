@@ -1,0 +1,81 @@
+# LokroOS .gitignore – Build-Artefakte, temporäre Dateien, Secrets
+# Stand: 2026-10-11
+
+# ISO / Live-Build Artefakte
+*.iso
+*.img
+*.squashfs
+iso/output/
+iso/work/
+iso/cache/
+cubic-*.log
+live-build/
+chroot/
+binary.*/
+
+# VM / Test-Artefakte
+*.vdi
+*.vmdk
+*.qcow2
+*.ova
+.vm/
+vm-test/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.hypothesis/
+.coverage
+htmlcov/
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Node (nur Web-Preview-Tooling, keine Electron-Runtime im Produkt)
+shell/web-preview/node_modules/
+shell/web-preview/dist/
+npm-debug.log*
+
+# Qt / QML Build
+*.o
+*.so
+moc_*
+qrc_*
+Makefile
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Lokale Secrets – NIEMALS committen
+*.key
+*.pem
+*.p12
+.env
+.env.*
+secrets/
+credentials.json
+*token*.json
+!branding/tokens.json
+gh-token.txt
+
+# Logs / Temp
+*.log
+*.tmp
+tmp/
+temp/

@@ -1,0 +1,37 @@
+/* LokroOS Design Tokens als CSS Custom Properties (generiert aus tokens.json, Stand 2026-10-11) */
+:root {
+  --lokro-black: #06090F;
+  --lokro-anthracite: #0E141D;
+  --lokro-anthracite-raised: #151D29;
+  --lokro-deep-blue: #0B1B33;
+  --lokro-cyan: #22D3EE;
+  --lokro-light-blue: #7DD3FC;
+  --lokro-deep-accent: #0EA5E9;
+  --lokro-glow: rgba(34, 211, 238, 0.35);
+  --lokro-text: #F1F5F9;
+  --lokro-text-secondary: #94A3B8;
+  --lokro-text-muted: #64748B;
+  --lokro-border-glass: rgba(148, 197, 255, 0.16);
+  --lokro-glass-bg: rgba(14, 20, 29, 0.62);
+  --lokro-glass-bg-strong: rgba(14, 20, 29, 0.82);
+  --lokro-blur: 18px;
+  --lokro-blur-strong: 28px;
+  --lokro-radius-sm: 10px;
+  --lokro-radius-md: 16px;
+  --lokro-radius-lg: 22px;
+  --lokro-radius-xl: 28px;
+  --lokro-shadow-card: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --lokro-shadow-glow: 0 0 24px rgba(34, 211, 238, 0.25);
+  --lokro-motion-fast: 120ms;
+  --lokro-motion-base: 220ms;
+  --lokro-motion-slow: 380ms;
+  --lokro-easing: cubic-bezier(0.22, 1, 0.36, 1);
+  --lokro-font: 'Inter', 'Noto Sans', system-ui, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "_comment": "LokroOS Paketmanifest – ProtonVPN (optional). Offizielle Methode, keine Secrets im Image.",
+  "method": "Offizielles ProtonVPN-Ubuntu-Repo (.deb von protonvpn.com), danach Paket 'proton-vpn-gnome-desktop' bzw. 'protonvpn-gui'. Kein Credential-Handling durch LokroOS.",
+  "packages": ["proton-vpn-gnome-desktop"],
+  "shell_integration": "Starter in Launcher + optionale Statusanzeige (nur lesend, App-Öffnung via .desktop). Ohne VPN läuft LokroOS normal.",
+  "verify": ["protonvpn-cli --version"]
+}

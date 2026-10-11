@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=LokroOS Welcome
+Comment=Animierte Begrüßung nach der Anmeldung (blockiert den Desktop nie)
+Exec=/usr/lib/lokroos/lokroos-welcome.py
+Icon=lokroos-logo
+OnlyShowIn=KDE;
+AutostartCondition=true
+X-GNOME-Autostart-enabled=true
+X-KDE-Autostart-after=panel
+# Fail-safe: bei Absturz keinen Restart-Loop erzeugen
+X-KDE-autostart-condition=false
+NoDisplay=true

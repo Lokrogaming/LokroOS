@@ -1,0 +1,135 @@
+@import url("../../branding/tokens.css");
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--lokro-font);
+  color: var(--lokro-text);
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(34,211,238,0.14), transparent 60%),
+    radial-gradient(900px 500px at 10% 110%, rgba(14,165,233,0.12), transparent 60%),
+    linear-gradient(180deg, #06090F, #0B1B33 120%);
+  min-height: 100vh;
+}
+
+/* Welcome overlay */
+#welcome-overlay {
+  position: fixed; inset: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(6, 9, 15, 0.86);
+  backdrop-filter: blur(var(--lokro-blur-strong));
+  transition: opacity var(--lokro-motion-slow) var(--lokro-easing);
+}
+#welcome-overlay.hidden { opacity: 0; pointer-events: none; }
+.welcome-inner { text-align: center; padding: 32px; }
+.welcome-logo { width: 96px; height: 96px; filter: drop-shadow(0 0 24px rgba(34,211,238,0.35)); }
+.welcome-text {
+  font-size: clamp(28px, 5vw, 44px); font-weight: 700; letter-spacing: -0.02em;
+  opacity: 0; transform: translateY(14px);
+  animation: reveal 900ms cubic-bezier(0.22,1,0.36,1) 150ms forwards;
+}
+@keyframes reveal { to { opacity: 1; transform: none; } }
+.welcome-loader { display: flex; gap: 10px; justify-content: center; margin-top: 26px; }
+.welcome-loader span {
+  width: 10px; height: 10px; border-radius: 999px; background: var(--lokro-cyan);
+  animation: pulse 1s ease-in-out infinite;
+}
+.welcome-loader span:nth-child(2) { animation-delay: 150ms; }
+.welcome-loader span:nth-child(3) { animation-delay: 300ms; }
+@keyframes pulse { 0%,100% { opacity: .3; transform: scale(.8);} 50% { opacity: 1; transform: scale(1.15);} }
+
+/* Desktop */
+#desktop { transition: opacity 500ms ease, filter 500ms ease; }
+#desktop.desktop-hidden { opacity: 0; filter: blur(10px); pointer-events: none; }
+
+.glass {
+  background: var(--lokro-glass-bg);
+  backdrop-filter: blur(var(--lokro-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--lokro-blur)) saturate(160%);
+  border: 1px solid var(--lokro-border-glass);
+  border-radius: var(--lokro-radius-lg);
+  box-shadow: var(--lokro-shadow-card);
+}
+
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  margin: 16px 20px 0; padding: 10px 18px; border-radius: var(--lokro-radius-md);
+}
+.brand { display: flex; align-items: center; gap: 8px; font-size: 15px; }
+.brand-dot { width: 12px; height: 12px; border-radius: 999px; background: var(--lokro-cyan); box-shadow: var(--lokro-shadow-glow); }
+.brand-os { color: var(--lokro-text-secondary); font-weight: 500; }
+.version-pill {
+  font-size: 11px; color: var(--lokro-light-blue);
+  border: 1px solid var(--lokro-border-glass); border-radius: 999px; padding: 2px 10px;
+}
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.clock { font-variant-numeric: tabular-nums; color: var(--lokro-text-secondary); min-width: 54px; text-align: right; }
+.icon-btn {
+  background: rgba(34,211,238,0.10); color: var(--lokro-text);
+  border: 1px solid var(--lokro-border-glass); border-radius: 999px;
+  min-width: 36px; height: 32px; cursor: pointer; font-weight: 600;
+}
+.icon-btn:hover { box-shadow: var(--lokro-shadow-glow); }
+.avatar { width: 32px; border-radius: 999px; }
+
+.grid {
+  display: grid; gap: 20px; padding: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  max-width: 1280px; margin: 0 auto;
+}
+.card { padding: 22px; }
+.card h2 { margin: 0 0 14px; font-size: 17px; font-weight: 600; }
+.syslist { margin: 0 0 14px; display: grid; gap: 8px; }
+.syslist > div { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; }
+.syslist dt { color: var(--lokro-text-secondary); }
+.syslist dd { margin: 0; font-weight: 500; }
+.quick-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.glass-btn {
+  background: rgba(148,197,255,0.08); color: var(--lokro-text);
+  border: 1px solid var(--lokro-border-glass); border-radius: var(--lokro-radius-sm);
+  padding: 8px 14px; cursor: pointer; font-size: 13px;
+  transition: box-shadow var(--lokro-motion-base) var(--lokro-easing);
+}
+.glass-btn:hover { box-shadow: var(--lokro-shadow-glow); }
+.glass-btn.active { background: rgba(34,211,238,0.18); border-color: var(--lokro-cyan); }
+
+#launcher-search {
+  width: 100%; margin-bottom: 12px; padding: 10px 14px;
+  border-radius: var(--lokro-radius-sm); border: 1px solid var(--lokro-border-glass);
+  background: rgba(6,9,15,0.5); color: var(--lokro-text); font-size: 14px;
+}
+.launcher-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 10px; }
+.launcher-item {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 12px 6px; border-radius: var(--lokro-radius-sm); cursor: pointer;
+  border: 1px solid transparent; background: transparent; color: var(--lokro-text); font-size: 12px;
+}
+.launcher-item:hover { background: rgba(34,211,238,0.08); border-color: var(--lokro-border-glass); }
+.launcher-item .glyph { font-size: 24px; }
+
+.tool-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 14px; }
+.tool-list li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 12px; border: 1px solid rgba(148,197,255,0.08); border-radius: 10px; }
+.badge { font-size: 11px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--lokro-border-glass); color: var(--lokro-light-blue); }
+.hint { font-size: 12px; color: var(--lokro-text-muted); }
+
+.taskbar {
+  position: sticky; bottom: 16px; margin: 0 auto; max-width: 720px;
+  display: flex; gap: 8px; padding: 10px 14px; border-radius: 18px;
+  margin-left: 20px; margin-right: 20px;
+}
+@media (min-width: 760px) { .taskbar { margin-left: auto; margin-right: auto; } }
+.task-btn {
+  background: transparent; color: var(--lokro-text); border: 1px solid transparent;
+  border-radius: 12px; padding: 10px 16px; cursor: pointer; font-size: 14px;
+}
+.task-btn:hover { background: rgba(34,211,238,0.10); border-color: var(--lokro-border-glass); }
+.task-btn.danger { color: #F87171; }
+.spacer { flex: 1; }
+
+#toast-region { position: fixed; bottom: 90px; right: 20px; display: grid; gap: 10px; z-index: 40; }
+.toast {
+  background: var(--lokro-glass-bg-strong); border: 1px solid var(--lokro-border-glass);
+  border-radius: 12px; padding: 12px 16px; font-size: 14px; box-shadow: var(--lokro-shadow-card);
+  animation: reveal 220ms var(--lokro-easing);
+}
