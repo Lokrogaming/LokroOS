@@ -1,0 +1,22 @@
+#!/bin/sh
+# LokroOS GRUB-Titel (BINARY-Hook): benennt Debian-Titel im ISO-Bootmenue um.
+# Ablauf: lb_binary_grub2 erzeugt binary/boot/grub/grub.cfg mit hartcodierten
+# "Debian GNU/Linux - ..."-Titeln -> dieser Hook (laeuft DANACH, vor
+# lb_binary_iso) setzt schlichte LokroOS-Titel. Beschluss: kein GfxTheme.
+# Pfad ist relativ zum Build-Root (lb startet Hooks dort).
+set -e
+CFG=binary/boot/grub/grub.cfg
+[ -f "$CFG" ] || { echo "[lokroos-grub][FEHLER] $CFG fehlt" >&2; exit 1; }
+# Reihenfolge wichtig: erst failsafe-Varianten, dann Haupt-Prefix (faengt auch
+# "live, kernel X" ein -> "Try or Install LokroOS, kernel X").
+sed -i 's/Debian GNU\/Linux - live[^"]*fail-safe[^"]*/LokroOS (safe graphics)/g' "$CFG"
+sed -i 's/Debian GNU\/Linux - live/Try or Install LokroOS/g' "$CFG"
+grep -q 'Try or Install LokroOS' "$CFG" \
+  || { echo "[lokroos-grub][FEHLER] Haupt-Titel fehlt" >&2; exit 1; }
+grep -q 'LokroOS (safe graphics)' "$CFG" \
+  || { echo "[lokroos-grub][FEHLER] Safe-Titel fehlt" >&2; exit 1; }
+if grep -q 'Debian GNU/Linux' "$CFG"; then
+  echo "[lokroos-grub][WARN] restliche Debian-Titel:" >&2
+  grep 'Debian GNU/Linux' "$CFG" >&2
+fi
+echo "[lokroos-grub] Titel OK"

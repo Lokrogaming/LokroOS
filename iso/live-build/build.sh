@@ -48,6 +48,7 @@ if [[ ! -f .stage/config ]]; then
     --security true --volatile true \
     --binary-images iso-hybrid \
     --bootloader grub \
+    --grub-splash none \
     --debian-installer false \
     --initramfs casper \
     --firmware-binary true --firmware-chroot true \
@@ -57,9 +58,20 @@ if [[ ! -f .stage/config ]]; then
     --iso-publisher "LOKRO" --iso-volume "LokroOS" 2>&1 | tee -a "$LOG"
 fi
 
-# --- GRUB-Titel schlicht umbenennen (Beschluss: kein GfxTheme), fail-fast ---
-log "GRUB-Titel prüfen/setzen …"
-python3 "$ROOT/iso/live-build/rename-grub.py" "$WORK" 2>&1 | tee -a "$LOG"
+# lb 3.x: --bootloader kennt nur grub|syslinux|yaboot, doch der casper-faehige
+# grub2-Pfad (lb_binary_grub2) laeuft nur mit LB_BOOTLOADER=grub2.
+# Override in config/common (fail-fast, kein stiller Fallback auf legacy-grub).
+log "Bootloader auf grub2 zwingen …"
+sed -i 's/^LB_BOOTLOADER=.*/LB_BOOTLOADER="grub2"/' config/common
+grep -q '^LB_BOOTLOADER="grub2"$' config/common \
+  || echo 'LB_BOOTLOADER="grub2"' >> config/common
+grep -q '^LB_BOOTLOADER="grub2"$' config/common \
+  || fail "LB_BOOTLOADER-Override fehlgeschlagen (Abbruch, kein falsches ISO)"
+
+# GRUB-Titel: übernimmt der Binary-Hook 0910-* (läuft nach lb_binary_grub2,
+# vor lb_binary_iso) – siehe iso/live-build/hooks/. Hier nur Präsenz prüfen:
+[[ -f config/hooks/normal/0910-lokroos-grub-titles.hook.binary ]] \
+  || fail "GRUB-Binary-Hook fehlt im Buildbaum."
 
 log "lb build (dauert je nach Netz/Maschine 30–90 Min) …"
 lb build 2>&1 | tee -a "$LOG"

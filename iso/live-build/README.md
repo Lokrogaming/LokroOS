@@ -10,8 +10,8 @@ Reproduzierbarer ISO-Build auf Ubuntu 24.04 (root, WSL oder VM). Baut ein
 | `extra-packages.txt` | ISO-Extras über Manifeste hinaus (ein Paket/Zeile) |
 | `generate.sh --root REPO --out BUILD` | Paketliste aus Manifesten (dedup) + Brand-Quellen nach `config/includes.chroot/opt/lokroos` + Hook kopieren |
 | `hooks/0900-lokroos-brand.hook.chroot` | Deployment im Ziel-Rootfs (Plymouth, GRUB-Config, SDDM, Backends, Calamares-Brand, Install-Icon) |
-| `rename-grub.py BUILD` | ISO-Bootmenü schlicht umbenennen (fail-fast, standalone testbar) |
-| `build.sh --root REPO --work DIR` | Gesamtablauf: generate → `lb config` → rename → `lb build` |
+| `hooks/0910-lokroos-grub-titles.hook.binary` | ISO-Bootmenü-Titel (Debian → LokroOS, fail-fast; läuft nach lb_binary_grub2) |
+| `build.sh --root REPO --work DIR` | Gesamtablauf: generate → `lb config` → grub2-Override → `lb build` |
 
 ## Ablauf (WSL-Beispiel)
 

@@ -52,9 +52,10 @@ for d in branding config installer shell packages; do
 done
 cp "$ROOT/VERSION" "$OUT/config/includes.chroot/opt/lokroos/"
 
-# --- 3. Hook ---
-cp "$ROOT/iso/live-build/hooks/0900-lokroos-brand.hook.chroot" \
+# --- 3. Hooks (chroot + binary) ---
+cp "$ROOT/iso/live-build/hooks/"*.hook.chroot \
+   "$ROOT/iso/live-build/hooks/"*.hook.binary \
   "$OUT/config/hooks/normal/"
-chmod +x "$OUT/config/hooks/normal/0900-lokroos-brand.hook.chroot"
+chmod +x "$OUT/config/hooks/normal/"*.hook.*
 
 log "Fertig: $(wc -l < "$OUT/config/package-lists/lokroos.list.chroot") Paketzeilen."

@@ -10,9 +10,10 @@ LB = ROOT / "iso" / "live-build"
 
 
 def test_scaffolding_files_exist():
-    for f in ("generate.sh", "build.sh", "rename-grub.py",
+    for f in ("generate.sh", "build.sh",
               "extra-packages.txt", "README.md",
-              "hooks/0900-lokroos-brand.hook.chroot"):
+              "hooks/0900-lokroos-brand.hook.chroot",
+              "hooks/0910-lokroos-grub-titles.hook.binary"):
         assert (LB / f).is_file(), f
 
 
@@ -78,40 +79,53 @@ def test_hook_deploys_brand_parts():
 
 def test_build_uses_lb3_options():
     build = (LB / "build.sh").read_text(encoding="utf-8")
-    for marker in ("--bootloader grub", "--bootappend-failsafe",
-                   "--volatile true", "--initramfs casper",
-                   "username=lokro", "hostname=lokroos",
-                   "rename-grub.py"):
+    for marker in ("--bootloader grub", "--grub-splash none",
+                   "--bootappend-failsafe", "--volatile true",
+                   "--initramfs casper", "username=lokro", "hostname=lokroos",
+                   'LB_BOOTLOADER="grub2"', "0910-lokroos-grub-titles"):
         assert marker in build, marker
     for stale in ("--bootloaders ", "--bootappend-live-failsafe",
                   "--username ", "--hostname ", "--image-name ",
-                  "--updates "):
-        assert stale not in build, f"veraltete lb-Option: {stale}"
+                  "--updates ", "rename-grub.py"):
+        assert stale not in build, f"veraltet/entfernt: {stale}"
 
 
-def test_grub_rename_on_fixture(tmp_path):
-    work = tmp_path / "build"
-    dest = work / "config" / "bootloaders" / "grub-pc"
-    dest.mkdir(parents=True)
-    (dest / "grub.cfg").write_text(
+def test_grub_binary_hook_on_fixture(tmp_path):
+    """Der ECHTE Binary-Hook gegen lb-nahe Debian-Titel (Build-Root nachstellen)."""
+    bash = _find_bash()
+    if bash is None:
+        return
+    grub_dir = tmp_path / "binary" / "boot" / "grub"
+    grub_dir.mkdir(parents=True)
+    (grub_dir / "grub.cfg").write_text(
         (Path(__file__).parent / "fixtures" / "grub-sample.cfg").read_text(
             encoding="utf-8"), encoding="utf-8")
-    r = subprocess.run([sys.executable, str(LB / "rename-grub.py"), str(work)],
-                       capture_output=True, text=True, timeout=30)
+    hook = str(LB / "hooks" / "0910-lokroos-grub-titles.hook.binary")
+    r = subprocess.run([bash, hook], capture_output=True, text=True,
+                       timeout=30, cwd=str(tmp_path))
     assert r.returncode == 0, r.stdout + r.stderr
-    out = (dest / "grub.cfg").read_text(encoding="utf-8")
+    out = (grub_dir / "grub.cfg").read_text(encoding="utf-8")
     assert '"Try or Install LokroOS"' in out
     assert '"LokroOS (safe graphics)"' in out
-    assert "Ubuntu" not in out.replace("LokroOS", "")
+    assert "Debian GNU/Linux" not in out
 
 
-def test_grub_rename_fails_without_entries(tmp_path):
-    work = tmp_path / "build"
-    dest = work / "config" / "bootloaders" / "grub-pc"
-    dest.mkdir(parents=True)
-    (dest / "grub.cfg").write_text("# leer\n", encoding="utf-8")
-    r = subprocess.run([sys.executable, str(LB / "rename-grub.py"), str(work)],
-                       capture_output=True, text=True, timeout=30)
+def test_grub_binary_hook_fails_cleanly(tmp_path):
+    bash = _find_bash()
+    if bash is None:
+        return
+    hook = str(LB / "hooks" / "0910-lokroos-grub-titles.hook.binary")
+    # 1. fehlende grub.cfg -> Exit != 0
+    r = subprocess.run([bash, hook], capture_output=True, text=True,
+                       timeout=30, cwd=str(tmp_path))
+    assert r.returncode != 0
+    # 2. grub.cfg ohne Pflicht-Titel -> Exit != 0
+    grub_dir = tmp_path / "binary" / "boot" / "grub"
+    grub_dir.mkdir(parents=True)
+    (grub_dir / "grub.cfg").write_text('menuentry "Other" {\n}\n',
+                                       encoding="utf-8")
+    r = subprocess.run([bash, hook], capture_output=True, text=True,
+                       timeout=30, cwd=str(tmp_path))
     assert r.returncode != 0  # fail-fast, kein falsches ISO
 
 
