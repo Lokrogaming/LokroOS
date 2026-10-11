@@ -16,6 +16,23 @@ fail() { echo "[lokroos-hook][FEHLER] $*" >&2; exit 1; }
 # Frueh-Gate: ohne Kernel kein bootfaehiges ISO (statt spaetem cp-Fehler).
 ls /boot/vmlinuz-* >/dev/null 2>&1 || fail "kein Kernel in /boot (Paketinstallation unvollstaendig?)"
 
+# --- ISO-Trim (Platz fuer 4-GiB-Limit; Provision installiert nach) ---
+if [ -f /opt/lokroos/iso-trim-packages.txt ]; then
+  log "Trimme ISO-Pakete …"
+  TRIM=""
+  while read -r line; do
+    pkg="$(echo "$line" | sed -e 's/#.*//' -e 's/^[ ]*//' -e 's/[ ]*$//')"
+    [ -n "$pkg" ] && TRIM="$TRIM $pkg"
+  done < /opt/lokroos/iso-trim-packages.txt
+  if [ -n "$TRIM" ]; then
+    # shellcheck disable=SC2086
+    apt-get purge -y $TRIM || warn "trim-purge meldete Fehler (fahre fort)."
+    apt-get autoremove -y --purge || warn "autoremove meldete Fehler."
+  fi
+else
+  warn "iso-trim-packages.txt fehlt – kein Trim."
+fi
+
 # --- Plymouth-Theme ---
 if [ -f "$SRC/config/plymouth/themes/lokroos/lokroos.plymouth" ]; then
   log "Plymouth-Theme …"

@@ -1,0 +1,10 @@
+# ISO-Trim-Liste: Pakete, die im LIVE-Image keinen Platz haben, aber auf dem
+# INSTALLIERTEN System (via provision-lokroos.sh) nachinstalliert werden.
+# Grund: ISO-9660-Limit – filesystem.squashfs muss < 4 GiB bleiben (xorriso
+# bricht sonst ab). Ein Muster pro Zeile (apt purge), Grund dahinter.
+code  # ~1 GB Electron – groesster Einzelposten; Provision installiert nach
+libreoffice-*  # Office-Suite; Zielgruppe Dev/Gamer, spaeter apt-installierbar
+fonts-noto-extra  # ~300 MB Zusatzglyphen (Basis-Noto bleibt)
+fonts-noto-cjk-extra  # ~200 MB CJK-Extra (Basis-CJK bleibt)
+fonts-noto-ui-extra  # ~70 MB UI-Extra
+kubuntu-wallpapers  # ~180 MB Wallpaper-Pack (Plasma-Default bleibt)

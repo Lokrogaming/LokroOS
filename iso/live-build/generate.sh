@@ -35,6 +35,8 @@ for d in branding config installer shell packages; do
   cp -r "$ROOT/$d" "$OUT/config/includes.chroot/opt/lokroos/"
 done
 cp "$ROOT/VERSION" "$OUT/config/includes.chroot/opt/lokroos/"
+cp "$ROOT/iso/live-build/trim-packages.txt" \
+  "$OUT/config/includes.chroot/opt/lokroos/iso-trim-packages.txt"
 
 # --- 3. Hooks flach nach config/hooks/ (lb-3.x-Pfade: *.chroot,
 # *.chroot_early, *.binary – KEIN normal/-Unterverzeichnis!) ---

@@ -94,8 +94,20 @@ def test_hook_deploys_brand_parts():
                    "installed-lokroos.cfg", "calamares/branding",
                    "lokroos-install.desktop", "settings.conf.lokroos-bak",
                    "/etc/hostname", "/boot/vmlinuz",
-                   "kein /etc/calamares/settings.conf"):
+                   "kein /etc/calamares/settings.conf",
+                   "iso-trim-packages.txt", "autoremove"):
         assert marker in hook, marker
+
+
+def test_trim_list_sane():
+    lines = [ln.split("#", 1)[0].strip() for ln in
+             (LB / "trim-packages.txt").read_text(encoding="utf-8").splitlines()]
+    trim = [ln for ln in lines if ln]
+    assert "code" in trim  # groesster Posten muss drin sein
+    assert "libreoffice-*" in trim
+    for keep in ("kubuntu-desktop", "nodejs", "wine64", "steam-installer",
+                 "calamares", "linux-image-generic", "plasma-desktop"):
+        assert keep not in trim, f"darf nicht getrimmt werden: {keep}"
 
 
 def test_build_uses_lb3_options():
