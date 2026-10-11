@@ -1,6 +1,6 @@
 # LokroOS BUILD.md – Build-, Test- und ISO-Anleitung
 
-Stand: 2026-10-11 · Version: 0.3.0 · Basis: Ubuntu 24.04 LTS (Noble), amd64.
+Stand: 2026-10-11 · Version: 0.4.0 · Basis: Ubuntu 24.04 LTS (Noble), amd64.
 
 ## 1. Basisentscheidung (verifiziert am 2026-10-11)
 
@@ -69,9 +69,12 @@ Calamares mit eigenem Branding; keine Dev-Dateien/Secrets im Image
 ## 5. Tests (M1, auf diesem Host ausführbar)
 
 ```bash
-python -m pytest tests/ -v          # 28 Tests (Win + WSL-Linux ausführen!)
+python -m pytest tests/ -v          # 33 Tests (Win + WSL-Linux ausführen!)
 python branding/render-assets.py --check  # Plymouth-PNGs vorhanden/gültig
 python scripts/check-env.py          # Umgebungsübersicht
+# Linux-Gegenprobe + Provision-Dry-Run (WSL, ungefährlich, ändert nichts):
+wsl -d Ubuntu-24.04 -- bash -c "cd /mnt/c/Users/lokro/projekte/lokroos && python3 -m pytest tests/"
+wsl -d Ubuntu-24.04 -- bash -c "cd /mnt/c/Users/lokro/projekte/lokroos && sudo ./iso/provision-lokroos.sh --dry-run"
 ```
 
 ## 6. Fehlerbehandlung

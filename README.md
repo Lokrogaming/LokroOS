@@ -35,18 +35,21 @@ python scripts/validate-tokens.py
 lokroos/
 ├── AGENTS.md / IDEAS.md / IMPORTANT.md  # Agent-Wissen, Roadmap, kritische Regeln
 ├── README.md / BUILD.md / ARCHITECTURE.md / KNOWN_LIMITATIONS.md
-├── VERSION                               # 0.1.0
-├── branding/      # tokens.json (Source of Truth), tokens.css, lokroos-logo.svg
+├── VERSION                               # 0.4.0
+├── branding/      # tokens.json (Dark + Light), tokens.css, logo.svg, render-assets.py
 ├── shell/
-│   ├── qml/       # Plasma-Shell (Main, Taskbar, Launcher, SystemOverview)
-│   ├── welcome/   # lokroos-welcome.py + .desktop-Autostart + welcome.qml
-│   └── web-preview/  # Ausführbarer Desktop-Prototyp (HTML/CSS/JS)
-├── config/        # plasma-, sddm-, plymouth-Konfigurationen (Zielsystem)
-├── packages/      # manifest-base/dev/gaming/vpn.json (versionierte Paketlisten)
-├── iso/           # build-iso.sh (Guards + Manifest-Check; Pipeline in M2)
+│   ├── qml/       # Native Shell (QML2, PARTIAL) – Ziel, kein Web-Code
+│   ├── stats/     # Stats-Backend (IMPLEMENTED, Linux-verifiziert)
+│   ├── welcome/   # Welcome-Backend + Autostart + QML-Overlay
+│   └── web-preview/  # NUR Design-Referenz (simulierte Daten, Demo-Tags)
+├── config/        # plasma-, sddm-, plymouth-Theme, grub-Configs (Zielsystem)
+├── installer/     # INSTALLER_SPEC.md + calamares/lokroos-Brand (PARTIAL)
+├── packages/      # manifest-base/dev/gaming/vpn.json (Paketwahrheit Stufe A)
+├── iso/           # build-iso.sh, provision-lokroos.sh, cubic-preset.json
+├── tools/         # setup-vm-host.ps1 (Windows-Host, Admin)
 ├── scripts/       # check-env, verify-manifests, validate-tokens
-├── tests/         # pytest-Suite (welcome, Manifeste, Tokens, Preview)
-└── docs/          # INSTALL.md, MAINTENANCE.md
+├── tests/         # pytest-Suite (Win + Linux grün)
+└── docs/          # INSTALL.md, MAINTENANCE.md, DESIGN_CASAOS.md
 ```
 
 Details: `ARCHITECTURE.md`. Build-Anleitung: `BUILD.md`. Kritische Regeln: `IMPORTANT.md`.
@@ -55,10 +58,11 @@ Details: `ARCHITECTURE.md`. Build-Anleitung: `BUILD.md`. Kritische Regeln: `IMPO
 
 | Bereich | Status | Bemerkung |
 |---|---|---|
-| Designsystem (Tokens, Glass Cards) | `IMPLEMENTED` | tokens.json/css + Preview verifiziert |
-| Web-Preview (Dashboard, Tabs, Charts, i18n) | `IMPLEMENTED` (Preview!) | Daten simuliert (Badge); Struktur-Tests grün |
-| Welcome-Backend (User, Sprache, Fail-safe) | `IMPLEMENTED` | **Linux-verifiziert** (WSL 24.04.5); 20/20 Tests Win+Linux |
+| Designsystem (Tokens Dark + Light) | `IMPLEMENTED` | tokens.json/css + 5 Design-Tests |
+| Web-Preview (Dashboard, Tabs, Charts, i18n) | `IMPLEMENTED` (Preview!) | Daten simuliert (Badge + Demo-Tags); Light-Toggle |
+| Welcome-Backend (User, Sprache, Fail-safe) | `IMPLEMENTED` | **Linux-verifiziert** (WSL 24.04.5) |
 | Stats-Backend (CPU/RAM/GPU/Net/Tasks) | `IMPLEMENTED` | **Linux-verifiziert**: 16 Kerne, RTX 4060 erkannt |
+| Installer-Spec (10 Schritte → Calamares) | `PARTIAL` | Spec + Brand + Slideshow; VM-Abnahme fehlt |
 | QML-Shell (Taskbar/Launcher/Übersicht/Dashboard) | `PARTIAL` | Gerüst steht (QtQuick 2.15 ✓ für Noble); Sitzungstest fehlt |
 | SDDM/Plymouth/Plasma-Configs | `PARTIAL` | Configs geschrieben, Zielsystem-Test fehlt |
 | Manifeste + Provisionierung (Node/npm/Wine) | `PARTIAL` | Manifeste verifiziert; `provision-lokroos.sh` dry-run ok |

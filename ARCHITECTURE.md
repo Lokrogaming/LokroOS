@@ -1,6 +1,6 @@
 # LokroOS ARCHITECTURE.md – Systemarchitektur (ehrlicher Stand)
 
-Stand: 2026-10-11 · Version 0.3.0.
+Stand: 2026-10-11 · Version 0.4.0.
 
 ## 0. Leseanweisung: vier Schichten, vier Wahrheiten
 
@@ -109,3 +109,23 @@ Zielsystem (VM/ISO) belegt ist – Preview-Tests belegen nur Schicht 1.
 Quell-Trennung = Verzeichnisstruktur (Shell / Configs / Manifeste / Branding /
 Build / Tests / Handbuch). Live (Casper) vs. installiert (Calamares-Postinstall);
 `.gitignore` + Audit verhindern Dev-/Secret-Leaks ins Image.
+
+## 7. Distributionsstrategie: eigenständig, stufenweise (Beschluss 2026-10-11)
+
+LokroOS wird eine **eigenständige Distribution** (eigener Name, eigenes Rootfs aus
+eigenem Manifest, eigene Configs, eigenes Boot/Installer/Shell-Erlebnis) – **kein**
+umbenanntes Kubuntu. Kernel, Treiber und Low-Level-Werkzeuge kommen bewusst aus dem
+Ökosystem (kein Kernel-Neubau). Stufen:
+
+| Stufe | Basis | Was wir selbst kontrollieren | Aufwand |
+|---|---|---|---|
+| **A (jetzt)** | Ubuntu-24.04-Pakete, eigenes Manifest + Rootfs-Auswahl, Calamares mit eigenem Brand, eigener Plymouth/GRUB/SDDM | Paketauswahl, Configs, Brand, Installer-Oberfläche, Shell | mittel |
+| **B (M3+)** | Debian-minimal + handverlesene Komponenten | zusätzlich: minimales Basissystem, weniger Ballast | mittel–groß |
+| **C (langfristig)** | eigene Paket-/Release-Strategie (eigene Repos, eigene Release-Tests) | zusätzlich: Update-Pfade, Signierung, Release-Takte | groß |
+
+Bewertung: A gewinnt bei Treiber-/Hardware-Support (Ubuntu-HWE), Sicherheitsupdates
+(Upstream, 5 Jahre) und Aufwand; B/C folgen erst, wenn A in VM-Matrix grün ist.
+Eigentümer-Tabelle (A): **eigen** = Shell (QML), Backends (Python), Brand/Configs,
+Installer-Oberfläche (Calamares-Brand + Spec), Manifeste, Build-Skripte;
+**übernommen** = Kernel, systemd, SDDM/Plasma/KWin, PipeWire, NetworkManager,
+APT/PackageKit, Calamares-Module, GRUB/Plymouth-Engines (nur gebrandet).

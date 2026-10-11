@@ -229,3 +229,26 @@ body {
   .window.opening, .window.closing, .tabpane, .toast { animation: none !important; }
   .bar i { transition: none !important; }
 }
+
+/* Demo-Kennzeichnung: simulierte Schalter (CasaOS-Regel 3) */
+.demo-tag {
+  font-size: 10px; font-weight: 600; color: var(--lokro-text-muted);
+  border: 1px dashed var(--lokro-border-glass); border-radius: 999px;
+  padding: 1px 7px; margin-left: 6px; vertical-align: 1px; white-space: nowrap;
+}
+
+/* Light Mode – helle Flächen für hartcodierte Dark-Surfaces */
+html[data-theme="light"] body {
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(2,132,199,0.12), transparent 60%),
+    radial-gradient(900px 500px at 10% 110%, rgba(14,165,233,0.10), transparent 60%),
+    linear-gradient(180deg, #EEF3F8, #D8E7F5 130%);
+}
+html[data-theme="light"] #welcome-overlay { background: rgba(238, 243, 248, 0.9); }
+html[data-theme="light"] .stat-card,
+html[data-theme="light"] .proc-row,
+html[data-theme="light"] .big-chart { background: rgba(255,255,255,0.72); }
+html[data-theme="light"] #launcher-search { background: rgba(255,255,255,0.8); }
+html[data-theme="light"] .launcher-item:hover { background: rgba(2,132,199,0.08); }
+html[data-theme="light"] .tab.active { background: rgba(2,132,199,0.10); }
+html[data-theme="light"] .task-btn.active { background: rgba(2,132,199,0.10); }

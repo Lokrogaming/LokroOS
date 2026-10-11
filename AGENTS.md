@@ -2,7 +2,7 @@
 
 > **Pflichtlektüre für jeden Coding-Agent.** Lies zuerst `AGENTS.md`, `IMPORTANT.md`
 > und bei Erweiterungen `IDEAS.md`. Prüfe danach gezielt nur aufgabenrelevante Dateien
-> (Docs = Einstieg, nicht Ersatz für Codeprüfung). Stand: 2026-10-11, Version 0.3.0.
+> (Docs = Einstieg, nicht Ersatz für Codeprüfung). Stand: 2026-10-11, Version 0.4.0.
 > Schichten strikt trennen (Preview ≠ Shell ≠ System ≠ ISO) – Details in `ARCHITECTURE.md` §0.
 
 ## 1. Projektziel & Designphilosophie
@@ -68,6 +68,10 @@ Hellblau `#7DD3FC`, Text `#F1F5F9/#94A3B8`. Glass: `rgba(14,20,29,.62)`, Blur 18
 Radien 10/16/22/28px, Schatten Card/Glow, Motion 120/220/380ms + `cubic-bezier(.22,1,.36,1)`.
 `prefers-reduced-motion`/`LOKROOS_NO_ANIM=1` → keine Animation. Konventionen: große
 Glass-Cards, Pill-Badges, min. Kontrast Secondary-Text, Fokus-Ringe sichtbar.
+Designrichtung: CasaOS-inspiriert (Dashboard-first, Kacheln, Status auf einen Blick),
+aber eigene dunkle Identität + optionaler **Light Mode** (`tokens.json > theme.light`,
+Preview-Umschalter). Details: `docs/DESIGN_CASAOS.md`. Regel: Versprochenes ausführen
+oder als `Demo` kennzeichnen (Preview) bzw. weglassen (QML).
 
 ## 6. Boot-/Login-/Welcome-Ablauf
 
@@ -78,20 +82,18 @@ Glass-Cards, Pill-Badges, min. Kontrast Secondary-Text, Fokus-Ringe sichtbar.
 
 ## 7. Feature-Status (ehrlich pflegen!)
 
-- `IMPLEMENTED`: Tokens+CSS, Web-Preview (Dashboard-Fenster, schließbare Tabs, Charts, i18n),
+- `IMPLEMENTED`: Tokens+CSS (Dark + Light), Web-Preview (Dashboard-Fenster, schließbare Tabs, Charts, i18n, Theme-Toggle),
   Welcome-Backend + Stats-Backend (**beide Linux-verifiziert** im WSL-Ubuntu 24.04.5),
-  Plymouth-Theme (Assets generiert, 6 Boot-Tests), GRUB-Snippets (schlicht).
+  Plymouth-Theme (Assets generiert, Boot-Tests), GRUB-Snippets (schlicht).
 - `PARTIAL`: QML-Shell (+Dashboard.qml), SDDM/Plasma-Configs, Manifeste,
   `provision-lokroos.sh` (inkl. Theme-/GRUB-/Calamares-Deploy, Echtlauf ausstehend),
-  Calamares-Brand (`branding.desc` + `show.qml` API 2 DE/EN, Abnahme ausstehend).
-- `PARTIAL`: QML-Shell (+Dashboard.qml), SDDM/Plasma-Configs, Manifeste,
-  `provision-lokroos.sh` (inkl. Theme-/GRUB-/Calamares-Deploy, Echtlauf ausstehend),
-  Calamares-Brand (`branding.desc` + `show.qml` API 2 DE/EN, Abnahme ausstehend).
+  Calamares-Brand (`branding.desc` + `show.qml` API 2 DE/EN, Abnahme ausstehend),
+  Installer-Spec (10 Schritte → Calamares-Module, `installer/INSTALLER_SPEC.md`).
 - `PLANNED`: Cubic-ISO-Build in der VM (`iso/cubic-preset.json`), live-build-Pipeline,
-- `PLANNED`: live-build-Pipeline, VM-Boot-Test (Live/Installer/Apps/Updates/Netz/Audio).
+  VM-Boot-Test (Live/Installer/Apps/Updates/Netz/Audio).
 - `BLOCKED`: derzeit nichts (WSL-Ubuntu steht; echte Plasma-Wayland-Sitzung weiter ohne Display).
 - `UNVERIFIED`: QML/SDDM/Plymouth ohne echte Wayland-Sitzung. – **Niemals Plan mit Funktionierendem verwechseln.**
-- Tests: **20/20 grün auf Windows UND Linux** (ein Linux-spezifischer getpass-Fall wurde gefunden + gefixt).
+- Tests: **grün auf Windows UND Linux** (ein Linux-spezifischer getpass-Fall wurde gefunden + gefixt).
 
 ## 8. Programme & Methoden
 
@@ -135,11 +137,11 @@ Schichtendisziplin: Web-Preview-Code darf **nie** in ISO/Shell wandern (nur Toke
 
 ## 12. Bekannte Schulden & Phase
 
-Schulden: QML-Sitzungstest, SDDM/Plymouth-Zieltest, Provision-Echtlauf, M2-Pipeline,
-VM-Matrix (Boot/Live/Installer/Login/Apps/Updates/Netz/Audio). Phase: **M2 läuft**
-(Backends Linux-verifiziert, Dashboard-Preview fertig); nächste Aufgaben:
-(1) Provision-Echtlauf in VM, (2) QML in Plasma-Sitzung testen + an Stats hängen,
-(3) live-build-Pipeline + VM-Boot-Matrix. Blockierte Arbeit als `BLOCKED` markieren,
+Schulden: QML-Sitzungstest, Provision-/Calamares-Abnahme in VM, Cubic-ISO,
+M2-Pipeline, VM-Matrix (Boot/Live/Installer/Login/Apps/Updates/Netz/Audio).
+Phase: **M2+ (eigenständige Distro, Stufe A)**: Backends Linux-verifiziert,
+Boot-Branding + Installer-Spec stehen; nächste Aufgaben: (1) Provision-Echtlauf
+in VM, (2) `calamares -c`-Abnahme, (3) Cubic-ISO + Boot-Matrix. Blockierte Arbeit als `BLOCKED` markieren,
 nicht scheinlösen. Einschränkungen: `KNOWN_LIMITATIONS.md`.
 
 ## 13. Regeln für Agents (verbindlich)

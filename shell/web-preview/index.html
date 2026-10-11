@@ -23,10 +23,11 @@
     <div class="brand">
       <span class="brand-dot" aria-hidden="true"></span>
       <strong>LOKRO</strong><span class="brand-os">OS</span>
-      <span class="version-pill" id="os-version">0.3.0</span>
+      <span class="version-pill" id="os-version">0.4.0</span>
     </div>
     <div class="topbar-right">
       <button class="icon-btn" id="btn-lang" title="Sprache umschalten (DE/EN)">DE</button>
+      <button class="icon-btn" id="btn-theme" title="Farbschema wechseln (dunkel/hell)">◐</button>
       <span id="clock" class="clock">--:--</span>
       <button class="icon-btn avatar" id="btn-user" title="Benutzerprofil">U</button>
     </div>
@@ -58,10 +59,10 @@
             <div class="stat-card"><div class="stat-head"><span data-i18n="net">Netzwerk</span><strong id="v-net">–</strong></div><canvas class="spark" id="c-net" height="56"></canvas><div class="bar"><i id="b-net"></i></div><small id="s-net">–</small></div>
           </div>
           <div class="quick-row">
-            <button class="glass-btn" id="q-wifi">WLAN</button>
-            <button class="glass-btn" id="q-audio">Audio</button>
-            <button class="glass-btn" id="q-bright">Helligkeit</button>
-            <button class="glass-btn" id="q-vpn">VPN</button>
+            <button class="glass-btn" id="q-wifi">WLAN <span class="demo-tag">Demo</span></button>
+            <button class="glass-btn" id="q-audio">Audio <span class="demo-tag">Demo</span></button>
+            <button class="glass-btn" id="q-bright">Helligkeit <span class="demo-tag">Demo</span></button>
+            <button class="glass-btn" id="q-vpn">VPN <span class="demo-tag">Demo</span></button>
           </div>
           <p class="hint" data-i18n="stats-note">Echtzeitwerte vom Zielsystem liefert shell/stats/lokroos-stats.py (CPU/RAM/GPU/Netz/Tasks als JSON).</p>
         </div>

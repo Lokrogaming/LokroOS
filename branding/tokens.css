@@ -29,6 +29,21 @@
   --lokro-font: 'Inter', 'Noto Sans', system-ui, sans-serif;
 }
 
+/* Light Mode (optional) – Werte aus tokens.json > theme.light */
+[data-theme="light"] {
+  --lokro-text: #0B1526;
+  --lokro-text-secondary: #3E556E;
+  --lokro-text-muted: #6B8299;
+  --lokro-border-glass: rgba(14, 60, 110, 0.14);
+  --lokro-glass-bg: rgba(255, 255, 255, 0.66);
+  --lokro-glass-bg-strong: rgba(255, 255, 255, 0.88);
+  --lokro-cyan: #0891B2;
+  --lokro-light-blue: #0284C7;
+  --lokro-deep-accent: #0369A1;
+  --lokro-shadow-card: 0 8px 28px rgba(15, 40, 70, 0.12);
+  --lokro-shadow-glow: 0 0 18px rgba(2, 132, 199, 0.18);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

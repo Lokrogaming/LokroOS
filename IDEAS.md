@@ -6,6 +6,9 @@
 
 ## Desktop & visuelles Design
 
+- **Light Mode (optional)** – `theme.light`-Tokens + Preview-Umschalter, Kontrast-regel
+  in IMPORTANT.md. Nutzen: Wahlfreiheit ohne Identitätsverlust. Aufwand: klein.
+  Priorität: mittel. Status: umgesetzt (Tokens + Preview + Tests).
 - **LokroOS-Icon-Theme (Cyan-Line)** – eigene App-/System-Icons im Cyan-Linien-Stil.
   Nutzen: Identität. Abhängigkeit: Design-Tokens. Aufwand: groß. Priorität: mittel. Status: Idee.
 - **Dynamische Akzentfarbe** – Cyan ↔ Hellblau ↔ Systemfarbe wählbar.
@@ -57,6 +60,9 @@
 - **Calamares-LokroOS-Brand + QML-Slideshow** – `installer/calamares/lokroos/` steht
   (branding.desc, show.qml API 2, DE/EN). Nutzen: eigener Install-Screen.
   Aufwand: mittel. Priorität: hoch. Status: in Arbeit (Abnahme per `calamares -c` fehlt).
+- **Installer-Spec (10 Schritte)** – `installer/INSTALLER_SPEC.md` mit Modul-Mapping
+  und Sicherheitsregeln. Nutzen: reproduzierbarer Install-Prozess. Aufwand: klein.
+  Priorität: hoch. Status: umgesetzt (Spec), Abnahme in Arbeit.
 - **Plymouth-LokroOS-Theme + GRUB-Branding** – Theme-Dateien generiert, installierter
   GRUB schlicht gebrandet. Nutzen: Boot-Identität. Aufwand: klein. Priorität: hoch.
   Status: umgesetzt (Dateien + Tests), VM-Reboot-Test in Arbeit.
@@ -81,6 +87,9 @@
 
 ## Langfristige Distribution
 
+- **Eigene Paket-/Release-Strategie (Stufe C)** – eigene Repos, Signierung,
+  Release-Takte (siehe `ARCHITECTURE.md` §7). Nutzen: volle Unabhängigkeit.
+  Aufwand: groß. Priorität: niedrig. Status: Idee (erst nach grüner Stufe-A-Matrix).
 - **ARM64-Port** – Raspberry-Pi-/ARM-Laptop-Image.
   Nutzen: Reichweite. Aufwand: groß. Priorität: niedrig. Status: Idee.
 - **26.04-Rebase evaluieren** – nach M2-Stabilität Tooling auf Resolute prüfen.

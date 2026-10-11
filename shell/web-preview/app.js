@@ -14,7 +14,8 @@
       "tabs-restore": "Tabs wiederherstellen",
       "stats-note": "Echtzeitwerte vom Zielsystem liefert shell/stats/lokroos-stats.py (CPU/RAM/GPU/Netz/Tasks als JSON).",
       "wine-hint": ".exe-Dateien werden nicht automatisch geöffnet – Rechtsklick → „Mit Wine ausführen“.",
-      search: "Suchen …"
+      search: "Suchen …",
+      "theme-title": "Farbschema wechseln (dunkel/hell)"
     },
     en: {
       welcome: "Welcome back, {user}!",
@@ -25,7 +26,8 @@
       "tabs-restore": "Restore tabs",
       "stats-note": "Live values on target come from shell/stats/lokroos-stats.py (CPU/RAM/GPU/Net/Tasks as JSON).",
       "wine-hint": ".exe files never auto-launch – right-click → “Run with Wine”.",
-      search: "Search …"
+      search: "Search …",
+      "theme-title": "Toggle color scheme (dark/light)"
     }
   };
 
@@ -67,6 +69,12 @@
   function push(arr, v) { arr.push(v); if (arr.length > HIST) arr.shift(); }
 
   /* ---------- Charts ---------- */
+  function isLight() { return document.documentElement.getAttribute("data-theme") === "light"; }
+  function pal() {
+    return isLight()
+      ? { main: "#0284C7", second: "#0369A1", grid: "rgba(14,60,110,0.14)", fill0: "rgba(2,132,199,0.35)", fill1: "rgba(2,132,199,0.02)" }
+      : { main: "#22D3EE", second: "#7DD3FC", grid: "rgba(148,197,255,0.15)", fill0: "rgba(34,211,238,0.45)", fill1: "rgba(34,211,238,0.02)" };
+  }
   function drawSpark(id, arr, max) {
     var cv = $(id);
     if (!cv) return;
@@ -76,21 +84,21 @@
     var ctx = cv.getContext("2d");
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
-    ctx.strokeStyle = "rgba(148,197,255,0.15)";
+    ctx.strokeStyle = pal().grid;
     ctx.lineWidth = 1;
     for (var g = 1; g < 4; g++) {
       ctx.beginPath(); ctx.moveTo(0, h * g / 4); ctx.lineTo(w, h * g / 4); ctx.stroke();
     }
     if (arr.length < 2) return;
     var grad = ctx.createLinearGradient(0, 0, 0, h);
-    grad.addColorStop(0, "rgba(34,211,238,0.45)");
-    grad.addColorStop(1, "rgba(34,211,238,0.02)");
+    grad.addColorStop(0, pal().fill0);
+    grad.addColorStop(1, pal().fill1);
     ctx.beginPath();
     arr.forEach(function (v, i) {
       var x = i / (HIST - 1) * w, y = h - Math.min(v / max, 1) * (h - 6) - 3;
       if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     });
-    ctx.strokeStyle = "#22D3EE"; ctx.lineWidth = 1.8; ctx.stroke();
+    ctx.strokeStyle = pal().main; ctx.lineWidth = 1.8; ctx.stroke();
     ctx.lineTo((arr.length - 1) / (HIST - 1) * w, h);
     ctx.lineTo(0, h); ctx.closePath();
     ctx.fillStyle = grad; ctx.fill();
@@ -106,7 +114,7 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
     var max = 1200;
-    [["rx", "#22D3EE"], ["tx", "#7DD3FC"]].forEach(function (pair) {
+    [["rx", pal().main], ["tx", pal().second]].forEach(function (pair) {
       var arr = sim[pair[0]];
       if (arr.length < 2) return;
       ctx.beginPath();
@@ -289,6 +297,7 @@
     });
     $("launcher-search").placeholder = dict.search;
     $("btn-lang").textContent = l.toUpperCase();
+    $("btn-theme").title = dict["theme-title"] || "";
     $("welcome-text").innerHTML = esc(dict.welcome.split("{user}")[0]) +
       "<span>" + esc(user) + "</span>" + esc(dict.welcome.split("{user}")[1] || "");
     return dict;
@@ -318,6 +327,11 @@
     $("btn-lang").addEventListener("click", function () {
       applyLang(lang === "de" ? "en" : "de");
       toast(lang === "de" ? "Sprache: Deutsch" : "Language: English");
+    });
+    $("btn-theme").addEventListener("click", function () {
+      var h = document.documentElement;
+      if (h.getAttribute("data-theme") === "light") h.removeAttribute("data-theme");
+      else h.setAttribute("data-theme", "light");
     });
     ["q-wifi", "q-audio", "q-bright", "q-vpn"].forEach(function (id) {
       $(id).addEventListener("click", function (e) { e.currentTarget.classList.toggle("active"); });

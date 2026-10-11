@@ -2,9 +2,9 @@
 # Separat paketierbar – kein Calamares-Fork noetig. Beschluss: Calamares + QML.
 componentName:  lokroos
 productName:    LokroOS
-version:        0.3.0
-shortVersion:   0.3
-versionedName:  LokroOS 0.3.0
+version:        0.4.0
+shortVersion:   0.4
+versionedName:  LokroOS 0.4.0
 productUrl:     https://github.com/Lokrogaming/LokroOS
 supportUrl:     https://github.com/Lokrogaming/LokroOS/issues
 knownIssuesUrl: https://github.com/Lokrogaming/LokroOS/blob/main/KNOWN_LIMITATIONS.md
