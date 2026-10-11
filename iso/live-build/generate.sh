@@ -2,7 +2,7 @@
 # LokroOS live-build Generator: baut aus Repo-Quellen einen lb-Buildbaum.
 #   ./iso/live-build/generate.sh --root <repo> --out <build-dir>
 # Erzeugt: config/package-lists/lokroos.list.chroot (Manifeste + Extras, dedup),
-# config/includes.chroot/opt/lokroos/ (Brand-Quellen), config/hooks/normal/ (Hook).
+# config/includes.chroot/opt/lokroos/ (Brand-Quellen), config/hooks/ (Hooks flach).
 # Aendert nichts am Repo, nur im Build-Verzeichnis. Idempotent (leert Ziel zuerst).
 set -euo pipefail
 
@@ -24,7 +24,7 @@ VERSION="$(cat "$ROOT/VERSION")"
 log "Version $VERSION – Buildbaum: $OUT"
 rm -rf "$OUT/config"
 mkdir -p "$OUT/config/package-lists" "$OUT/config/includes.chroot/opt/lokroos" \
-  "$OUT/config/hooks/normal"
+  "$OUT/config/hooks"
 
 # --- 1. Paketliste aus Manifesten + Extras - Excludes (eine Wahrheit) ---
 python3 "$ROOT/iso/live-build/make_packagelist.py" "$ROOT" \
@@ -36,11 +36,10 @@ for d in branding config installer shell packages; do
 done
 cp "$ROOT/VERSION" "$OUT/config/includes.chroot/opt/lokroos/"
 
-# --- 3. Hooks (chroot + early + binary) ---
-cp "$ROOT/iso/live-build/hooks/"*.hook.chroot \
-   "$ROOT/iso/live-build/hooks/"*.hook.binary \
-   "$ROOT/iso/live-build/hooks/"*.hook.chroot_early \
-  "$OUT/config/hooks/normal/"
-chmod +x "$OUT/config/hooks/normal/"*.hook.*
+# --- 3. Hooks flach nach config/hooks/ (lb-3.x-Pfade: *.chroot,
+# *.chroot_early, *.binary – KEIN normal/-Unterverzeichnis!) ---
+cp "$ROOT/iso/live-build/hooks/"* "$OUT/config/hooks/"
+chmod +x "$OUT/config/hooks/"*.chroot "$OUT/config/hooks/"*.chroot_early \
+  "$OUT/config/hooks/"*.binary
 
 log "Fertig: $(wc -l < "$OUT/config/package-lists/lokroos.list.chroot") Paketzeilen."

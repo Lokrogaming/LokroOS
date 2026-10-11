@@ -12,8 +12,8 @@ Reproduzierbarer ISO-Build auf Ubuntu 24.04 (root, WSL oder VM). Baut ein
 | `make_packagelist.py` | Paketliste aus Manifesten + Extras − Excludes (importierbar, getestet) |
 | `generate.sh --root REPO --out BUILD` | Schreibt Paketliste, Brand-Quellen (`includes.chroot/opt/lokroos`), Hooks |
 | `hooks/0000-lokroos-repos.hook.chroot_early` | VOR Paketinstallation im Chroot: i386-Arch + Nodesource/VSCode/gh-Repos (fail-fast) |
-| `hooks/0900-lokroos-brand.hook.chroot` | Deployment im Ziel-Rootfs (Plymouth, GRUB-Config, SDDM, Backends, Calamares-Brand, Install-Icon) |
-| `hooks/0910-lokroos-grub-titles.hook.binary` | ISO-Bootmenü-Titel (Debian → LokroOS, fail-fast; läuft nach lb_binary_grub2) |
+| `hooks/0900-lokroos-brand.chroot` | Deployment im Ziel-Rootfs (Plymouth, GRUB-Config, SDDM, Backends, Calamares-Brand, Install-Icon) |
+| `hooks/0910-lokroos-grub-titles.binary` | ISO-Bootmenü-Titel (Debian → LokroOS, fail-fast; läuft nach lb_binary_grub2) |
 | `build.sh --root REPO --work DIR` | Gesamtablauf: generate → `lb config` → grub2-Override → `lb build` |
 
 ## Bekannte lb-3.x-Fallstricke (verifiziert 2026-10-11, live-build 3.0~a57)

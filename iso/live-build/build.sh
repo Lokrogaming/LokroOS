@@ -70,7 +70,7 @@ grep -q '^LB_BOOTLOADER="grub2"$' config/common \
 
 # GRUB-Titel: übernimmt der Binary-Hook 0910-* (läuft nach lb_binary_grub2,
 # vor lb_binary_iso) – siehe iso/live-build/hooks/. Hier nur Präsenz prüfen:
-[[ -f config/hooks/normal/0910-lokroos-grub-titles.hook.binary ]] \
+[[ -f config/hooks/0910-lokroos-grub-titles.binary ]] \
   || fail "GRUB-Binary-Hook fehlt im Buildbaum."
 
 log "lb build (dauert je nach Netz/Maschine 30–90 Min) …"

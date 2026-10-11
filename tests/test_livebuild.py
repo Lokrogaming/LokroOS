@@ -12,9 +12,9 @@ LB = ROOT / "iso" / "live-build"
 def test_scaffolding_files_exist():
     for f in ("generate.sh", "build.sh", "make_packagelist.py",
               "extra-packages.txt", "exclude-iso.txt", "README.md",
-              "hooks/0900-lokroos-brand.hook.chroot",
-              "hooks/0000-lokroos-repos.hook.chroot_early",
-              "hooks/0910-lokroos-grub-titles.hook.binary"):
+              "hooks/0900-lokroos-brand.chroot",
+              "hooks/0000-lokroos-repos.chroot_early",
+              "hooks/0910-lokroos-grub-titles.binary"):
         assert (LB / f).is_file(), f
 
 
@@ -49,9 +49,9 @@ def test_pipeline_sources_are_git_tracked():
               "iso/live-build/extra-packages.txt",
               "iso/live-build/exclude-iso.txt",
               "iso/live-build/README.md",
-              "iso/live-build/hooks/0900-lokroos-brand.hook.chroot",
-              "iso/live-build/hooks/0000-lokroos-repos.hook.chroot_early",
-              "iso/live-build/hooks/0910-lokroos-grub-titles.hook.binary"):
+              "iso/live-build/hooks/0900-lokroos-brand.chroot",
+              "iso/live-build/hooks/0000-lokroos-repos.chroot_early",
+              "iso/live-build/hooks/0910-lokroos-grub-titles.binary"):
         assert f in tracked, f"nicht getrackt (gitignore?): {f}"
 
 
@@ -81,14 +81,14 @@ def test_bash_syntax():
     if bash is None:
         return  # keine echte Bash: Skip (WSL-Run prueft mit)
     for script in ("generate.sh", "build.sh",
-                   "hooks/0900-lokroos-brand.hook.chroot"):
+                   "hooks/0900-lokroos-brand.chroot"):
         r = subprocess.run([bash, "-n", str(LB / script)],
                            capture_output=True, text=True, timeout=30)
         assert r.returncode == 0, f"{script}: {r.stderr}"
 
 
 def test_hook_deploys_brand_parts():
-    hook = (LB / "hooks" / "0900-lokroos-brand.hook.chroot").read_text(
+    hook = (LB / "hooks" / "0900-lokroos-brand.chroot").read_text(
         encoding="utf-8")
     for marker in ("set -e", "plymouth-set-default-theme",
                    "installed-lokroos.cfg", "calamares/branding",
@@ -111,6 +111,16 @@ def test_build_uses_lb3_options():
         assert stale not in build, f"veraltet/entfernt: {stale}"
 
 
+def test_generate_places_hooks_flat():
+    """Regression: lb 3.x findet Hooks NUR flach unter config/hooks/
+    (*.chroot, *.chroot_early, *.binary) – normal/-Unterverzeichnis ist tot."""
+    gen = (LB / "generate.sh").read_text(encoding="utf-8")
+    assert "config/hooks/" in gen
+    assert "hooks/normal" not in gen, "Ablage in hooks/normal/ wird von lb 3.x ignoriert"
+    for suffix in (".chroot", ".chroot_early", ".binary"):
+        assert suffix in gen, suffix
+
+
 def test_grub_binary_hook_on_fixture(tmp_path):
     """Der ECHTE Binary-Hook gegen lb-nahe Debian-Titel (Build-Root nachstellen)."""
     bash = _find_bash()
@@ -121,7 +131,7 @@ def test_grub_binary_hook_on_fixture(tmp_path):
     (grub_dir / "grub.cfg").write_text(
         (Path(__file__).parent / "fixtures" / "grub-sample.cfg").read_text(
             encoding="utf-8"), encoding="utf-8")
-    hook = str(LB / "hooks" / "0910-lokroos-grub-titles.hook.binary")
+    hook = str(LB / "hooks" / "0910-lokroos-grub-titles.binary")
     r = subprocess.run([bash, hook], capture_output=True, text=True,
                        timeout=30, cwd=str(tmp_path))
     assert r.returncode == 0, r.stdout + r.stderr
@@ -135,7 +145,7 @@ def test_grub_binary_hook_fails_cleanly(tmp_path):
     bash = _find_bash()
     if bash is None:
         return
-    hook = str(LB / "hooks" / "0910-lokroos-grub-titles.hook.binary")
+    hook = str(LB / "hooks" / "0910-lokroos-grub-titles.binary")
     # 1. fehlende grub.cfg -> Exit != 0
     r = subprocess.run([bash, hook], capture_output=True, text=True,
                        timeout=30, cwd=str(tmp_path))
