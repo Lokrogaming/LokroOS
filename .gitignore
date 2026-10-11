@@ -1,17 +1,19 @@
 # LokroOS .gitignore – Build-Artefakte, temporäre Dateien, Secrets
 # Stand: 2026-10-11
 
-# ISO / Live-Build Artefakte
+# ISO / Live-Build Artefakte (NUR Outputs – Quellcode unter iso/live-build/ bleibt versioniert!)
 *.iso
 *.img
 *.squashfs
+*.stage
 iso/output/
 iso/work/
 iso/cache/
 cubic-*.log
-live-build/
 chroot/
 binary.*/
+build.log
+build-*.log
 
 # VM / Test-Artefakte
 *.vdi

@@ -1,0 +1,93 @@
+#!/bin/sh
+# LokroOS live-build CHROOT-Hook: Brand-Deployment im Ziel-Rootfs.
+# Laeuft als root im Chroot (lb baut danach SquashFS + Initrd daraus).
+# Quellen liegen unter /opt/lokroos (gelegt von generate.sh via includes.chroot).
+# Idempotent, nur ASCII, guarded (kein harter Abbruch bei optionalen Teilen –
+# Pflichtteile brechen laut ab, damit kein falsches ISO entsteht).
+set -e
+
+SRC=/opt/lokroos
+log() { echo "[lokroos-hook] $*"; }
+warn() { echo "[lokroos-hook][WARN] $*" >&2; }
+fail() { echo "[lokroos-hook][FEHLER] $*" >&2; exit 1; }
+
+[ -d "$SRC/config" ] || fail "Quelle $SRC/config fehlt (generate.sh nicht gelaufen?)"
+
+# --- Plymouth-Theme ---
+if [ -f "$SRC/config/plymouth/themes/lokroos/lokroos.plymouth" ]; then
+  log "Plymouth-Theme …"
+  mkdir -p /usr/share/plymouth/themes/lokroos
+  cp "$SRC/config/plymouth/themes/lokroos/lokroos.plymouth" \
+     "$SRC/config/plymouth/themes/lokroos/lokroos.script" \
+     "$SRC/config/plymouth/themes/lokroos/logo.png" \
+     "$SRC/config/plymouth/themes/lokroos/bar.png" \
+     "$SRC/config/plymouth/themes/lokroos/box.png" \
+     /usr/share/plymouth/themes/lokroos/
+  cp "$SRC/config/plymouth/plymouthd.conf" /etc/plymouth/ 2>/dev/null || true
+  if command -v plymouth-set-default-theme >/dev/null 2>&1; then
+    plymouth-set-default-theme lokroos
+  else
+    warn "plymouth-set-default-theme fehlt – Theme nur abgelegt."
+  fi
+else
+  warn "Plymouth-Quelle fehlt – uebersprungen."
+fi
+
+# --- Installierter GRUB (Name im Bootmenue des installierten Systems) ---
+if [ -f "$SRC/config/grub/installed-lokroos.cfg" ]; then
+  mkdir -p /etc/default/grub.d
+  cp "$SRC/config/grub/installed-lokroos.cfg" /etc/default/grub.d/lokroos.cfg
+fi
+
+# --- SDDM + Plasma-Defaults + Autostart ---
+[ -f "$SRC/config/sddm/lokroos.conf" ] && {
+  mkdir -p /etc/sddm.conf.d
+  cp "$SRC/config/sddm/lokroos.conf" /etc/sddm.conf.d/
+}
+mkdir -p /etc/skel/.config/autostart /etc/skel/Desktop
+[ -f "$SRC/shell/welcome/lokroos-welcome.desktop" ] && \
+  cp "$SRC/shell/welcome/lokroos-welcome.desktop" /etc/skel/.config/autostart/
+[ -f "$SRC/config/plasma/kdeglobals" ] && \
+  cp "$SRC/config/plasma/kdeglobals" /etc/skel/.config/
+
+# --- Native Backends + QML-Shell ---
+mkdir -p /usr/lib/lokroos /usr/share/lokroos
+cp "$SRC/shell/welcome/lokroos-welcome.py" "$SRC/shell/stats/lokroos-stats.py" /usr/lib/lokroos/
+chmod 755 /usr/lib/lokroos/lokroos-welcome.py /usr/lib/lokroos/lokroos-stats.py
+[ -d "$SRC/shell/qml" ] && cp -r "$SRC/shell/qml" /usr/share/lokroos/
+[ -f "$SRC/branding/lokroos-logo.svg" ] && cp "$SRC/branding/lokroos-logo.svg" /usr/share/lokroos/
+
+# --- Calamares-Brand (chirurgisch: nur branding-Schluessel, Sequenz bleibt) ---
+if [ -d /etc/calamares ]; then
+  log "Calamares-Brand …"
+  mkdir -p /etc/calamares/branding/lokroos
+  cp "$SRC/installer/calamares/lokroos/branding.desc" \
+     "$SRC/installer/calamares/lokroos/show.qml" \
+     "$SRC/installer/calamares/lokroos/logo.svg" \
+     /etc/calamares/branding/lokroos/
+  cp /etc/calamares/settings.conf /etc/calamares/settings.conf.lokroos-bak
+  if grep -q '^branding:' /etc/calamares/settings.conf; then
+    sed -i 's/^branding:.*/branding: lokroos/' /etc/calamares/settings.conf
+  else
+    printf '%s\n' "branding: lokroos" >> /etc/calamares/settings.conf
+  fi
+  grep -q '^branding: lokroos' /etc/calamares/settings.conf \
+    || fail "Calamares-branding-Schluessel wurde nicht gesetzt."
+else
+  warn "/etc/calamares fehlt (Calamares-Paket?). Installer ohne Brand."
+fi
+
+# --- Install-Icon (Live-Session + Skel) ---
+cat > /usr/share/applications/lokroos-install.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=Install LokroOS
+Comment=LokroOS auf diesem Rechner installieren (nur in VMs testen)
+Exec=sh -c "pkexec calamares || sudo -E calamares"
+Icon=lokroos-logo
+Terminal=false
+Categories=System;
+EOF
+cp /usr/share/applications/lokroos-install.desktop /etc/skel/Desktop/ 2>/dev/null || true
+
+log "Hook fertig."

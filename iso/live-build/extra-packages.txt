@@ -1,0 +1,8 @@
+# LokroOS ISO-Extras (ueber packages/manifest-*.json hinaus) – ein Paket pro Zeile.
+# Der Generator (generate.sh) fuehrt Manifeste + diese Liste dedupliziert zusammen.
+kubuntu-desktop
+linux-image-generic
+casper
+calamares
+cryptsetup
+lvm2

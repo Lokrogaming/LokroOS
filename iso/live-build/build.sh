@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# LokroOS ISO-Build (live-build) – läuft NUR auf Ubuntu 24.04 als root (WSL/VM).
+#   sudo ./iso/live-build/build.sh --root <repo> --work ~/lokroos-build
+# Schritte: generate.sh -> lb config -> GRUB-Titel umbenennen (fail-fast) -> lb build.
+# lb baut in Stufen (bootstrap/chroot/binary); Wiederaufruf setzt fort.
+# Log: <work>/build-<version>-<datum>.log
+set -euo pipefail
+
+ROOT=""; WORK=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --root) ROOT="$2"; shift 2;;
+    --work) WORK="$2"; shift 2;;
+    -h|--help) sed -n '1,7p' "$0"; exit 0;;
+    *) echo "Unbekannte Option: $1" >&2; exit 2;;
+  esac
+done
+[[ -n "$ROOT" && -n "$WORK" ]] || { echo "--root und --work sind Pflicht." >&2; exit 2; }
+
+log() { echo "[lokroos-iso] $*"; }
+fail() { echo "[lokroos-iso][FEHLER] $*" >&2; exit 1; }
+
+[[ "$(uname -s)" == "Linux" ]] || fail "Nur Linux."
+[[ "$(id -u)" -eq 0 ]] || fail "Bitte als root (sudo)."
+# shellcheck disable=SC1091
+. /etc/os-release
+[[ "${ID:-}" == "ubuntu" && "${VERSION_ID:-}" == "24.04" ]] || \
+  fail "Erwartet Ubuntu 24.04, gefunden: ${ID:-?} ${VERSION_ID:-?}"
+command -v lb >/dev/null 2>&1 || fail "'lb' fehlt: apt-get install -y live-build"
+export DEBIAN_FRONTEND=noninteractive
+
+VERSION="$(cat "$ROOT/VERSION")"
+mkdir -p "$WORK"
+LOG="$WORK/build-$VERSION-$(date +%Y%m%d-%H%M%S).log"
+log "Version $VERSION – Log: $LOG – Arbeit: $WORK"
+
+"$ROOT/iso/live-build/generate.sh" --root "$ROOT" --out "$WORK" 2>&1 | tee -a "$LOG"
+
+cd "$WORK"
+if [[ ! -f .stage/config ]]; then
+  log "lb config …"
+  lb config \
+    --mode ubuntu --distribution noble \
+    --archive-areas "main restricted universe multiverse" \
+    --security true --updates true \
+    --binary-images iso-hybrid \
+    --bootloaders "grub-efi grub-pc" \
+    --debian-installer false \
+    --firmware-binary true --firmware-chroot true \
+    --bootappend-live "boot=casper quiet splash ---" \
+    --bootappend-live-failsafe "boot=casper nomodeset quiet splash ---" \
+    --username lokro --hostname lokroos \
+    --iso-application "LokroOS $VERSION" --iso-preparer "LOKRO" \
+    --iso-publisher "LOKRO" --iso-volume "LokroOS" \
+    --image-name "lokroos-$VERSION-amd64" 2>&1 | tee -a "$LOG"
+fi
+
+# --- GRUB-Titel schlicht umbenennen (Beschluss: kein GfxTheme), fail-fast ---
+log "GRUB-Titel prüfen/setzen …"
+python3 "$ROOT/iso/live-build/rename-grub.py" "$WORK" 2>&1 | tee -a "$LOG"
+
+log "lb build (dauert je nach Netz/Maschine 30–90 Min) …"
+lb build 2>&1 | tee -a "$LOG"
+log "Fertig. ISO-Dateien:"
+ls -la live-image-*.iso *.iso 2>/dev/null | tee -a "$LOG" || ls -la ./*.iso | tee -a "$LOG"

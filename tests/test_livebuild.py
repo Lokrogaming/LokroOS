@@ -16,6 +16,24 @@ def test_scaffolding_files_exist():
         assert (LB / f).is_file(), f
 
 
+def test_pipeline_sources_are_git_tracked():
+    """Regression: .gitignore darf Pipeline-Quellen nie wieder schlucken."""
+    git = shutil.which("git")
+    if git is None:
+        return
+    r = subprocess.run([git, "ls-files", "iso/live-build"],
+                       capture_output=True, text=True, timeout=30,
+                       cwd=str(ROOT))
+    assert r.returncode == 0, r.stderr
+    tracked = set(r.stdout.split())
+    for f in ("iso/live-build/generate.sh", "iso/live-build/build.sh",
+              "iso/live-build/rename-grub.py",
+              "iso/live-build/extra-packages.txt",
+              "iso/live-build/README.md",
+              "iso/live-build/hooks/0900-lokroos-brand.hook.chroot"):
+        assert f in tracked, f"nicht getrackt (gitignore?): {f}"
+
+
 def test_extra_packages_sane():
     lines = [ln.split("#", 1)[0].strip() for ln in
              (LB / "extra-packages.txt").read_text(encoding="utf-8").splitlines()]
