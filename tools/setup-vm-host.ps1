@@ -60,13 +60,24 @@ Write-Host "VBoxManage: $VBoxManage"
 # --- 2. ISO-Download + SHA256-Pruefung ---
 Write-Step "2/4 Kubuntu-ISO (5,1 GB) pruefen/laden"
 New-Item -ItemType Directory -Path $IsoDir -Force | Out-Null
+function Get-WantHash {
+  # Laedt SHA256SUMS als DATEI (Content-Property von Invoke-WebRequest ist je nach
+  # Content-Type ein Byte-Array - deshalb nie direkt parsen) und matcht den Dateinamen
+  # EXAKT (kein Substring: sonst treffen auch .torrent/.zsync-Zeilen).
+  $sumFile = Join-Path $IsoDir "SHA256SUMS"
+  Invoke-WebRequest -Uri "$IsoBase/SHA256SUMS" -OutFile $sumFile
+  foreach ($line in (Get-Content -LiteralPath $sumFile)) {
+    $parts = $line -split "\s+"
+    if ($parts.Count -ge 2 -and $parts[-1].TrimStart("*") -eq $IsoFile) { return $parts[0].ToLower() }
+  }
+  throw "Dateiname $IsoFile nicht in SHA256SUMS gefunden (geprueft: $sumFile)."
+}
 $needDownload = $true
 if (Test-Path -LiteralPath $IsoPath) {
   Write-Host "ISO vorhanden - pruefe Checksumme ..."
-  $sums = Invoke-WebRequest -Uri "$IsoBase/SHA256SUMS" -UseBasicParsing | Select-Object -ExpandProperty Content
-  $want = ($sums -split "`n" | Where-Object { $_ -match [regex]::Escape($IsoFile) }) -split "\s+" | Select-Object -First 1
+  $want = Get-WantHash
   $have = (Get-FileHash -LiteralPath $IsoPath -Algorithm SHA256).Hash.ToLower()
-  if ($have -eq $want.ToLower()) { Write-Host "Checksumme OK - Download uebersprungen."; $needDownload = $false }
+  if ($have -eq $want) { Write-Host "Checksumme OK - Download uebersprungen."; $needDownload = $false }
   else { Write-Warning "Checksumme falsch - lade erneut." }
 }
 if ($needDownload) {
@@ -77,10 +88,9 @@ if ($needDownload) {
     Write-Warning "BITS fehlgeschlagen, Fallback Invoke-WebRequest ..."
     Invoke-WebRequest -Uri "$IsoBase/$IsoFile" -OutFile $IsoPath
   }
-  $sums = Invoke-WebRequest -Uri "$IsoBase/SHA256SUMS" -UseBasicParsing | Select-Object -ExpandProperty Content
-  $want = ($sums -split "`n" | Where-Object { $_ -match [regex]::Escape($IsoFile) }) -split "\s+" | Select-Object -First 1
+  $want = Get-WantHash
   $have = (Get-FileHash -LiteralPath $IsoPath -Algorithm SHA256).Hash.ToLower()
-  if ($have -ne $want.ToLower()) { throw "SHA256 mismatch! Datei ggf. beschaedigt: $IsoPath" }
+  if ($have -ne $want) { throw "SHA256 mismatch! Datei ggf. beschaedigt: $IsoPath" }
   Write-Host "Checksumme OK."
 }
 
