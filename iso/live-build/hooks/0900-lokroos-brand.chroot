@@ -13,6 +13,9 @@ fail() { echo "[lokroos-hook][FEHLER] $*" >&2; exit 1; }
 
 [ -d "$SRC/config" ] || fail "Quelle $SRC/config fehlt (generate.sh nicht gelaufen?)"
 
+# Frueh-Gate: ohne Kernel kein bootfaehiges ISO (statt spaetem cp-Fehler).
+ls /boot/vmlinuz-* >/dev/null 2>&1 || fail "kein Kernel in /boot (Paketinstallation unvollstaendig?)"
+
 # --- Plymouth-Theme ---
 if [ -f "$SRC/config/plymouth/themes/lokroos/lokroos.plymouth" ]; then
   log "Plymouth-Theme …"
@@ -24,8 +27,9 @@ if [ -f "$SRC/config/plymouth/themes/lokroos/lokroos.plymouth" ]; then
      "$SRC/config/plymouth/themes/lokroos/box.png" \
      /usr/share/plymouth/themes/lokroos/
   cp "$SRC/config/plymouth/plymouthd.conf" /etc/plymouth/ 2>/dev/null || true
-  if command -v plymouth-set-default-theme >/dev/null 2>&1; then
-    plymouth-set-default-theme lokroos
+  PSET="$(command -v plymouth-set-default-theme 2>/dev/null || echo /usr/sbin/plymouth-set-default-theme)"
+  if [ -x "$PSET" ]; then
+    "$PSET" -R lokroos || fail "plymouth-set-default-theme -R schlug fehl."
   else
     warn "plymouth-set-default-theme fehlt – Theme nur abgelegt."
   fi
@@ -61,7 +65,12 @@ chmod 755 /usr/lib/lokroos/lokroos-welcome.py /usr/lib/lokroos/lokroos-stats.py
 [ -f "$SRC/branding/lokroos-logo.svg" ] && cp "$SRC/branding/lokroos-logo.svg" /usr/share/lokroos/
 
 # --- Calamares-Brand (chirurgisch: nur branding-Schluessel, Sequenz bleibt) ---
+# settings.conf kommt aus calamares-settings-kubuntu (bewaehrte Sequenz);
+# unser Brand ersetzt nur Name/Slideshow. Fehlt die Datei -> laut abbrechen
+# (statt blindem cp), damit kein brandloses ISO entsteht.
 if [ -d /etc/calamares ]; then
+  [ -f /etc/calamares/settings.conf ] \
+    || fail "kein /etc/calamares/settings.conf (calamares-settings-... fehlt?)"
   log "Calamares-Brand …"
   mkdir -p /etc/calamares/branding/lokroos
   cp "$SRC/installer/calamares/lokroos/branding.desc" \

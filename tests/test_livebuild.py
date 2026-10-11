@@ -90,10 +90,11 @@ def test_bash_syntax():
 def test_hook_deploys_brand_parts():
     hook = (LB / "hooks" / "0900-lokroos-brand.chroot").read_text(
         encoding="utf-8")
-    for marker in ("set -e", "plymouth-set-default-theme",
+    for marker in ("set -e", "/usr/sbin/plymouth-set-default-theme",
                    "installed-lokroos.cfg", "calamares/branding",
                    "lokroos-install.desktop", "settings.conf.lokroos-bak",
-                   "/etc/hostname"):
+                   "/etc/hostname", "/boot/vmlinuz",
+                   "kein /etc/calamares/settings.conf"):
         assert marker in hook, marker
 
 

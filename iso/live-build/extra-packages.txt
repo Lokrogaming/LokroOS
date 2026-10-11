@@ -6,5 +6,6 @@ linux-firmware
 casper
 calamares
 calamares-settings-ubuntu-common
+calamares-settings-kubuntu
 cryptsetup
 lvm2
