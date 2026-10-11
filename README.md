@@ -66,8 +66,8 @@ Details: `ARCHITECTURE.md`. Build-Anleitung: `BUILD.md`. Kritische Regeln: `IMPO
 | QML-Shell (Taskbar/Launcher/Übersicht/Dashboard) | `PARTIAL` | Gerüst steht (QtQuick 2.15 ✓ für Noble); Sitzungstest fehlt |
 | SDDM/Plymouth/Plasma-Configs | `PARTIAL` | Configs geschrieben, Zielsystem-Test fehlt |
 | Manifeste + Provisionierung (Node/npm/Wine) | `PARTIAL` | Manifeste verifiziert; `provision-lokroos.sh` dry-run ok |
-| ISO-Build (live-build/Cubic) | `PLANNED` | Skript-Guards implementiert, Pipeline in M2 |
-| VM-Boot-Test (Live, Installer) | `PLANNED` | WSL-Ubuntu steht; Nutzer-VM für Boot-Test vorgesehen |
+| ISO-Build (live-build, WSL) | `IMPLEMENTED` | `iso/output/lokroos-0.4.0-amd64.iso` (3,3 GB, SHA-256-geprüft, GRUB-Titel ✓) |
+| VM-Boot-Test (Live, Installer) | `PLANNED` | ISO bereit (`-CustomIso`), Live-Test zuerst, dann Installation (Testmatrix in `docs/INSTALL.md`) |
 
 Legende: `IMPLEMENTED` = implementiert + überprüft · `PARTIAL` = teilweise ·
 `PLANNED` = geplant · `BLOCKED` = blockiert · `UNVERIFIED` = vorhanden, nicht ausreichend getestet.

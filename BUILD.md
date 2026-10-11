@@ -31,16 +31,22 @@ sudo apt update && sudo apt install -y live-build calamares \
 # ODER Prototyp-Weg: Cubic (https://github.com/PJ-Singh-001/Cubic) auf der VM.
 ```
 
-## 4. Build-Prozess (M2, automatisiert)
+## 4. Build-Prozess (verifiziert 2026-10-11, WSL-Ubuntu 24.04)
+
+Voraussetzungen (einmalig): `sudo apt-get install -y live-build xorriso isolinux
+syslinux-utils git python3` (isohybrid kommt aus `syslinux-utils`).
 
 ```bash
-git clone https://github.com/Lokrogaming/LokroOS.git
-cd LokroOS
-python3 scripts/verify-manifests.py --root .
-python3 scripts/validate-tokens.py
-sudo ./iso/build-iso.sh --profile noble --out iso/output
-# → iso/output/lokroos-*.iso + Build-Log
+git clone https://github.com/Lokrogaming/LokroOS.git && cd LokroOS
+sudo ./iso/live-build/build.sh --root . --work ~/lokroos-build
+# → lokroos-0.4.0-amd64.iso (3,3 GB) + Build-Log
 ```
+
+Verifiziert am Erst-Build: ISO 9660, Volume-ID `LokroOS`, El Torito bootfähig,
+GRUB-Menü („Try or Install LokroOS“, „LokroOS (safe graphics)“), SHA-256 im Log.
+Bekannte lb-3.x-Fallstricke (Details: `iso/live-build/README.md`): grub2-Override
+in allen Config-Dateien, Firmware-Scrape aus, i386 + Fremd-Repos per Early-Hook,
+SquashFS < 4 GiB (Trim-Liste), `binary/`-Layout ggf. manuell versöhnen.
 
 ## 4b. Cubic-Prototyp-ISO (in der Kubuntu-VM, GUI vorhanden)
 

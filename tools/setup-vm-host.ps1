@@ -11,6 +11,8 @@
     .\tools\setup-vm-host.ps1
     .\tools\setup-vm-host.ps1 -VmName "LokroOS-Test2" -MemoryMB 8192 -Cpus 4 -DiskGB 40
     .\tools\setup-vm-host.ps1 -Recreate   # vorhandene VM gleichen Namens neu aufbauen
+    .\tools\setup-vm-host.ps1 -VmName "LokroOS-ISO-Test" -CustomIso "C:\Users\lokro\projekte\lokroos\iso\output\lokroos-0.4.0-amd64.iso"
+       # eigene ISO einhaengen (z.B. LokroOS-Build) statt Kubuntu zu laden
 
   Idempotent: Vorhandenes (VirtualBox, ISO mit gueltiger Checksumme) wird uebersprungen.
   Hinweis: Datei bewusst nur ASCII (Umlaute als ae/oe/ue), damit PowerShell 5.1
@@ -23,6 +25,7 @@ param(
   [int]$Cpus = 4,
   [int]$DiskGB = 40,
   [string]$IsoDir = (Join-Path $env:USERPROFILE "Downloads\ISO"),
+  [string]$CustomIso = "",
   [switch]$Recreate
 )
 
@@ -57,7 +60,12 @@ if (-not $VBoxManage) { $VBoxManage = "C:\Program Files\Oracle\VirtualBox\VBoxMa
 & $VBoxManage --version
 Write-Host "VBoxManage: $VBoxManage"
 
-# --- 2. ISO-Download + SHA256-Pruefung ---
+# --- 2. ISO-Download + SHA256-Pruefung (entfaellt bei -CustomIso) ---
+if ($CustomIso -ne "") {
+  if (-not (Test-Path -LiteralPath $CustomIso)) { throw "CustomIso nicht gefunden: $CustomIso" }
+  $IsoPath = $CustomIso
+  Write-Step "2/4 Eigenes ISO: $IsoPath (Download uebersprungen)"
+} else {
 Write-Step "2/4 Kubuntu-ISO (5,1 GB) pruefen/laden"
 New-Item -ItemType Directory -Path $IsoDir -Force | Out-Null
 function Get-WantHash {
@@ -93,6 +101,7 @@ if ($needDownload) {
   if ($have -ne $want) { throw "SHA256 mismatch! Datei ggf. beschaedigt: $IsoPath" }
   Write-Host "Checksumme OK."
 }
+} # Ende else (Kubuntu-Download); bei -CustomIso entfaellt Abschnitt 2
 
 # --- 3. VM erstellen (idempotent) ---
 Write-Step "3/4 VM $VmName erstellen"

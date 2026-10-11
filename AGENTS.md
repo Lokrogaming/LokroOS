@@ -89,8 +89,9 @@ oder als `Demo` kennzeichnen (Preview) bzw. weglassen (QML).
   `provision-lokroos.sh` (inkl. Theme-/GRUB-/Calamares-Deploy, Echtlauf ausstehend),
   Calamares-Brand (`branding.desc` + `show.qml` API 2 DE/EN, Abnahme ausstehend),
   Installer-Spec (10 Schritte → Calamares-Module, `installer/INSTALLER_SPEC.md`).
-- `PLANNED`: Cubic-ISO-Build in der VM (`iso/cubic-preset.json`), live-build-Pipeline,
-  VM-Boot-Test (Live/Installer/Apps/Updates/Netz/Audio).
+- `PLANNED`: Cubic-ISO als Alternative, VM-Boot-Test (Live/Installer/Apps/Updates/Netz/Audio).
+- `IMPLEMENTED` (Schicht 4): live-build-ISO `lokroos-0.4.0-amd64.iso`
+  (3,3 GB, SHA-256 + GRUB-Titel verifiziert, Details `docs/BUILD-REPORT-2026-10-11-ISO.md` §6).
 - `BLOCKED`: derzeit nichts (WSL-Ubuntu steht; echte Plasma-Wayland-Sitzung weiter ohne Display).
 - `UNVERIFIED`: QML/SDDM/Plymouth ohne echte Wayland-Sitzung. – **Niemals Plan mit Funktionierendem verwechseln.**
 - Tests: **grün auf Windows UND Linux** (ein Linux-spezifischer getpass-Fall wurde gefunden + gefixt).

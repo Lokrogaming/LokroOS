@@ -6,8 +6,10 @@
 - **WSL-`Ubuntu-24.04` (24.04.5 LTS) läuft auf dem Host** – Python-Backends (Welcome,
   Stats) sind dort echt verifiziert; `apt-cache` belegt Plasma 5.27.12 / Qt 5.15.13 /
   layer-shell-qt. Kein Docker, keine Grafikausgabe (kein Display-Server) in WSL.
-- Folge: QML-/SDDM-/Plymouth-Sitzungstests (`UNVERIFIED`) und ISO-Build/VM-Boot
-  (`PLANNED`) brauchen weiter eine VM mit Display (Nutzer-VM vorgesehen).
+- Folge: QML-/SDDM-/Plymouth-Sitzungstests (`UNVERIFIED`) und VM-Boot
+  brauchen weiter eine VM mit Display. **ISO-Build ist fertig:**
+  `iso/output/lokroos-0.4.0-amd64.iso` (3,3 GB, SHA-256 + GRUB-Titel verifiziert,
+  siehe `docs/BUILD-REPORT-2026-10-11-ISO.md` §6).
 
 ## Funktional
 

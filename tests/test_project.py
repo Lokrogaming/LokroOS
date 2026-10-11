@@ -86,7 +86,8 @@ def test_vm_prep_files_exist():
     assert script.is_file()
     text = script.read_text(encoding="utf-8")
     for marker in ("RunAsAdministrator", "VBoxManage", "SHA256",
-                   "kubuntu-24.04.5", "vmsvga", "provision-lokroos.sh"):
+                   "kubuntu-24.04.5", "vmsvga", "provision-lokroos.sh",
+                   "CustomIso"):
         assert marker in text, marker
     install = (ROOT / "docs" / "INSTALL.md").read_text(encoding="utf-8")
     for marker in ("LokroOS-Test", "provision-lokroos.sh",

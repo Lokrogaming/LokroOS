@@ -49,3 +49,16 @@ bei Wiederholung sauberer Relaunch mit `setsid`-Abkopplung.
 - Tool-Lehre: Shell-Quoting durch die PowerShell→WSL-Kette ist unzuverlässig
   (Pipes/Muster werden gefressen); Log-Analyse nur noch per Probe-Skript-Dateien.
 - WSL baut prinzipiell (Netz, Platz, Rechte ok) – Display/Boot-Test bleibt VM-Sache.
+
+## 6. Nachtrag: ISO fertig (16:55 Uhr, verifiziert)
+
+- `iso/output/lokroos-0.4.0-amd64.iso`: 3.549.546.496 Bytes, ISO 9660,
+  Volume-ID `LokroOS`, El-Torito-bootfähig, `isohybrid` gesetzt.
+- SHA-256: `731af5c4e2a4d8ae99d9860974cb39eec09b37fb1a8d91f41816215190cc042e`
+  (Build-Baum und Windows-Kopie identisch).
+- GRUB-Menü aus dem ISO extrahiert: „Try or Install LokroOS“,
+  „LokroOS (safe graphics)“ (+ Kernel-Varianten), kein Debian-/Kubuntu-Text.
+- Gelöste Blockaden auf dem Weg: SquashFS-Trim 4,2 → 3,3 GB
+  (`iso/live-build/trim-packages.txt`), `binary/`-Layout versöhnt
+  (`chroot/binary` → `./binary`), `syslinux-utils` (isohybrid) nachinstalliert.
+- Offen: Live-Boot + Installer-Abnahme in der VM (Testmatrix `docs/INSTALL.md`).
