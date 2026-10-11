@@ -71,8 +71,22 @@ def test_hook_deploys_brand_parts():
         encoding="utf-8")
     for marker in ("set -e", "plymouth-set-default-theme",
                    "installed-lokroos.cfg", "calamares/branding",
-                   "lokroos-install.desktop", "settings.conf.lokroos-bak"):
+                   "lokroos-install.desktop", "settings.conf.lokroos-bak",
+                   "/etc/hostname"):
         assert marker in hook, marker
+
+
+def test_build_uses_lb3_options():
+    build = (LB / "build.sh").read_text(encoding="utf-8")
+    for marker in ("--bootloader grub", "--bootappend-failsafe",
+                   "--volatile true", "--initramfs casper",
+                   "username=lokro", "hostname=lokroos",
+                   "rename-grub.py"):
+        assert marker in build, marker
+    for stale in ("--bootloaders ", "--bootappend-live-failsafe",
+                  "--username ", "--hostname ", "--image-name ",
+                  "--updates "):
+        assert stale not in build, f"veraltete lb-Option: {stale}"
 
 
 def test_grub_rename_on_fixture(tmp_path):

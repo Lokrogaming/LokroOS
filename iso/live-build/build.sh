@@ -39,20 +39,22 @@ log "Version $VERSION – Log: $LOG – Arbeit: $WORK"
 cd "$WORK"
 if [[ ! -f .stage/config ]]; then
   log "lb config …"
+  # Optionen passend zu live-build 3.0 (Noble): --bootloader (singular),
+  # --bootappend-failsafe, --volatile statt --updates, --initramfs casper.
+  # Live-User/Hostname via Casper-Bootparameter (kein lb-Schalter in 3.x).
   lb config \
     --mode ubuntu --distribution noble \
     --archive-areas "main restricted universe multiverse" \
-    --security true --updates true \
+    --security true --volatile true \
     --binary-images iso-hybrid \
-    --bootloaders "grub-efi grub-pc" \
+    --bootloader grub \
     --debian-installer false \
+    --initramfs casper \
     --firmware-binary true --firmware-chroot true \
-    --bootappend-live "boot=casper quiet splash ---" \
-    --bootappend-live-failsafe "boot=casper nomodeset quiet splash ---" \
-    --username lokro --hostname lokroos \
+    --bootappend-live "boot=casper username=lokro hostname=lokroos quiet splash ---" \
+    --bootappend-failsafe "boot=casper username=lokro nomodeset quiet splash ---" \
     --iso-application "LokroOS $VERSION" --iso-preparer "LOKRO" \
-    --iso-publisher "LOKRO" --iso-volume "LokroOS" \
-    --image-name "lokroos-$VERSION-amd64" 2>&1 | tee -a "$LOG"
+    --iso-publisher "LOKRO" --iso-volume "LokroOS" 2>&1 | tee -a "$LOG"
 fi
 
 # --- GRUB-Titel schlicht umbenennen (Beschluss: kein GfxTheme), fail-fast ---
@@ -62,4 +64,4 @@ python3 "$ROOT/iso/live-build/rename-grub.py" "$WORK" 2>&1 | tee -a "$LOG"
 log "lb build (dauert je nach Netz/Maschine 30–90 Min) …"
 lb build 2>&1 | tee -a "$LOG"
 log "Fertig. ISO-Dateien:"
-ls -la live-image-*.iso *.iso 2>/dev/null | tee -a "$LOG" || ls -la ./*.iso | tee -a "$LOG"
+ls -la ./*.iso 2>&1 | tee -a "$LOG"
