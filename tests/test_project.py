@@ -1,5 +1,6 @@
 """Manifest- und Token-Tests (statisch, ohne Root/Netzwerk)."""
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -78,3 +79,30 @@ def test_stats_backend_exists():
     for marker in ("read_cpu_times", "read_mem", "read_net_counters",
                    "read_tasks", "read_gpu", "--loop", "supported"):
         assert marker in text, marker
+
+
+def test_vm_prep_files_exist():
+    script = ROOT / "tools" / "setup-vm-host.ps1"
+    assert script.is_file()
+    text = script.read_text(encoding="utf-8")
+    for marker in ("RunAsAdministrator", "VBoxManage", "SHA256",
+                   "kubuntu-24.04.5", "vmsvga", "provision-lokroos.sh"):
+        assert marker in text, marker
+    install = (ROOT / "docs" / "INSTALL.md").read_text(encoding="utf-8")
+    for marker in ("LokroOS-Test", "provision-lokroos.sh",
+                   "frisch-installiert", "Plasma (X11)"):
+        assert marker in install, marker
+
+
+def test_vm_host_script_syntax():
+    """Echte Syntaxprüfung via PowerShell-Parser (nur Windows mit powershell.exe)."""
+    ps = shutil.which("powershell")
+    if ps is None:
+        return  # auf Linux: still überspringen (bash -n deckt .sh ab)
+    check = ("$e=$null; [void][System.Management.Automation.Language.Parser]::"
+             "ParseFile('tools\\setup-vm-host.ps1',[ref]$null,[ref]$e); $e.Count")
+    r = subprocess.run([ps, "-NoProfile", "-Command", check],
+                       capture_output=True, text=True, timeout=60,
+                       cwd=str(ROOT))
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.strip() == "0", f"PS-Parser-Fehler: {r.stdout}"
